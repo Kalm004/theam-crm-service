@@ -1,8 +1,7 @@
 package com.aromero.theamcrmservice.user;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -14,5 +13,20 @@ public class UserController {
     @GetMapping("/user")
     public List<User> getAll() {
         return userService.getAllUsers();
+    }
+
+    @PostMapping("/user")
+    public void createUser(@RequestBody User user) {
+        userService.saveUser(user);
+    }
+
+    @PutMapping("/user/{id}")
+    public void updateUser(@PathVariable(value = "id") Long id, @RequestBody User user) {
+        userService.saveUser(user);
+    }
+
+    @DeleteMapping("/user/{id}")
+    public void deleteUser(@PathVariable(value = "id") Long id) {
+        userService.deleteUser(id);
     }
 }

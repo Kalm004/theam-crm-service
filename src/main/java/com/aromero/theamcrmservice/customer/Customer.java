@@ -5,8 +5,8 @@ import javax.persistence.*;
 @Entity
 public class Customer {
     @Id
-    @GeneratedValue(strategy=GenerationType.SEQUENCE, generator = "customer_Sequence")
-    @SequenceGenerator(name = "customer_Sequence", sequenceName = "CUSTOMER_SEQ")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(columnDefinition = "serial")
     private Long id;
 
     @Column(name = "name")
