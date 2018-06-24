@@ -29,4 +29,14 @@ public class UserController {
     public void deleteUser(@PathVariable(value = "id") Long id) {
         userService.deleteUser(id);
     }
+
+    @PostMapping("user/{id}/admin")
+    public void setUserAsAdmin(@PathVariable(value = "id") Long id) {
+        userService.setUserAdminStatus(id, true);
+    }
+
+    @DeleteMapping("user/{id}/admin")
+    public void setUserAsNoAdmin(@PathVariable(value = "id") Long id) {
+        userService.setUserAdminStatus(id, false);
+    }
 }

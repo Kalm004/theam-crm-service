@@ -21,7 +21,7 @@ public class UserServiceTest {
     public void getAllUsers() {
         List<User> allUsers = userService.getAllUsers();
 
-        Assert.assertEquals(1, allUsers.size());
+        Assert.assertEquals(2, allUsers.size());
     }
     @Test
     public void getUserByIdFound() {
@@ -76,7 +76,24 @@ public class UserServiceTest {
         userService.deleteUser(1L);
 
         List<User> userList = userService.getAllUsers();
-        Assert.assertTrue(userList.isEmpty());
+        Assert.assertEquals(1, userList.size());
     }
-    
+
+    @Test
+    @DirtiesContext
+    public void setNoAdminUserAsAdmin() {
+        userService.setUserAdminStatus(1L, true);
+
+        Optional<User> user = userService.getUserById(1L);
+        Assert.assertTrue(user.get().getAdmin());
+    }
+
+    @Test
+    @DirtiesContext
+    public void setAdminUserAsNoAdmin() {
+        userService.setUserAdminStatus(2L, false);
+
+        Optional<User> user = userService.getUserById(2L);
+        Assert.assertFalse(user.get().getAdmin());
+    }
 }

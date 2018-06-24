@@ -3,6 +3,7 @@ package com.aromero.theamcrmservice.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,5 +26,15 @@ public class UserService {
     
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public void setUserAdminStatus(Long id, Boolean adminStatus) {
+        Optional<User> user = userRepository.findById(id);
+        if (user.isPresent()) {
+            user.get().setAdmin(adminStatus);
+            userRepository.save(user.get());
+        } else {
+            throw new EntityNotFoundException("User with id = " + id + " not found");
+        }
     }
 }

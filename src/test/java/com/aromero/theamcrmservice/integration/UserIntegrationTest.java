@@ -28,7 +28,7 @@ public class UserIntegrationTest {
             get(baseUrl + "/user").
         then().
             statusCode(200).
-            body("size()", equalTo(1));
+            body("size()", equalTo(2));
     }
 }
 
