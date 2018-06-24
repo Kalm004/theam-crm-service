@@ -73,7 +73,7 @@ public class UserServiceTest {
     @Test
     @DirtiesContext
     public void deleteUser() {
-        userService.deleteUser(1L);
+        userService.deleteUser(2L);
 
         List<User> userList = userService.getAllUsers();
         Assert.assertEquals(1, userList.size());

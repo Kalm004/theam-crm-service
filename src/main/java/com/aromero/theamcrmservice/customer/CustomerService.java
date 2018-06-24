@@ -1,5 +1,6 @@
 package com.aromero.theamcrmservice.customer;
 
+import com.aromero.theamcrmservice.user.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,12 @@ public class CustomerService {
         return customerRepository.findById(id);
     }
 
-    public void saveCustomer(Customer customer) {
+    public void saveCustomer(Customer customer, User user) {
+        if (customer.getId() != null) {
+            customer.setCreatedByUser(user);
+        } else {
+            customer.setModifiedByUser(user);
+        }
         customerRepository.save(customer);
     }
 
