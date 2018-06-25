@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@RequestMapping("/customers")
 public class CustomerController {
     @Autowired
     private CustomerService customerService;
@@ -24,12 +25,12 @@ public class CustomerController {
         return new ModelMapper();
     }
 
-    @GetMapping("/customer")
+    @GetMapping
     public List<Customer> getAll() {
         return customerService.getAllCustomers();
     }
 
-    @GetMapping("/customer/{id}")
+    @GetMapping("/{id}")
     public Customer getById(@PathVariable(value = "id") Long id) {
         Optional<Customer> customer = customerService.getCustomerById(id);
         if (customer.isPresent()) {
@@ -39,21 +40,21 @@ public class CustomerController {
         }
     }
 
-    @PostMapping("/customer")
+    @PostMapping
     public void createCustomer(@RequestBody CustomerImportDTO customer) {
         //TODO: get the user that did the request
         User user = userService.getUserById(1L).orElseThrow(EntityNotFoundException::new);
         customerService.saveCustomer(convertToEntity(customer), user);
     }
 
-    @PutMapping("/customer/{id}")
+    @PutMapping("/{id}")
     public void updateCustomer(@PathVariable(value = "id") Long id, @RequestBody CustomerImportDTO customer) {
         //TODO: get the user that did the request
         User user = userService.getUserById(1L).orElseThrow(EntityNotFoundException::new);
         customerService.saveCustomer(convertToEntity(customer), user);
     }
 
-    @DeleteMapping("/customer/{id}")
+    @DeleteMapping("/{id}")
     public void deleteCustomer(@PathVariable(value = "id") Long id) {
         customerService.deleteCustomer(id);
     }
