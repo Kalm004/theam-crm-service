@@ -1,6 +1,7 @@
 package com.aromero.theamcrmservice.integration;
 
-import com.aromero.theamcrmservice.auth.UserLoginDTO;
+import com.aromero.theamcrmservice.auth.LoginRequest;
+import com.aromero.theamcrmservice.auth.LoginResponse;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
 import org.junit.Before;
@@ -11,7 +12,6 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.when;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -22,25 +22,25 @@ public class UserIntegrationTest {
 
     private String baseUrl;
 
-    private String token;
+    private LoginResponse loginResponse;
 
     @Before
     public void before() {
         baseUrl = "http://localhost:" + port;
 
-        token =
+        loginResponse =
             given().
                 contentType(ContentType.JSON).
-                body(new UserLoginDTO("user2@domain.com", "test")).
+                body(new LoginRequest("user2@domain.com", "test")).
             post(baseUrl + "/login").
                 body().
-                asString();
+                as(LoginResponse.class);
     }
 
     @Test
     public void getAllUsers200AndGetListOfUsers() {
         given().
-            header(new Header("Authorization", "Bearer " + token)).
+            header(new Header("Authorization", "Bearer " + loginResponse.getToken())).
         when().
             get(baseUrl + "/users").
         then().

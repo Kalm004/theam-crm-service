@@ -1,13 +1,7 @@
 package com.aromero.theamcrmservice.auth;
 
-import com.aromero.theamcrmservice.security.JwtTokenProvider;
-import com.aromero.theamcrmservice.user.UserRepository;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -15,30 +9,22 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
+@Api(value = "Controller that provides a login endpoint.")
 public class AuthController {
-    @Autowired
-    AuthenticationManager authenticationManager;
+    private final AuthService authService;
 
     @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-    JwtTokenProvider tokenProvider;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
 
     @PostMapping("/login")
-    public String login(@Valid @RequestBody UserLoginDTO userLogin) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        userLogin.getEmail(),
-                        userLogin.getPassword()
-                )
-        );
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        return tokenProvider.generateToken(authentication);
+    @ApiOperation("Login endpoint that will return a token if the user is correctly authenticated")
+    @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "Empty email or password"),
+            @ApiResponse(code = 401, message = "Bad credentials")
+    })
+    public LoginResponse login(@ApiParam("Email and password of the user") @Valid @RequestBody LoginRequest loginRequest) {
+        return authService.login(loginRequest);
     }
 }

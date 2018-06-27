@@ -16,6 +16,10 @@ public class CustomUserDetails implements UserDetails {
 
     private String name;
 
+    private String lastName;
+
+    private Boolean isAdmin;
+
     @JsonIgnore
     private String email;
 
@@ -24,9 +28,12 @@ public class CustomUserDetails implements UserDetails {
 
     private Collection<? extends GrantedAuthority> authorities;
 
-    public CustomUserDetails(Long id, String name, String email, String password, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(Long id, String name, String lastName, Boolean isAdmin, String email, String password,
+                             Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.name = name;
+        this.lastName = lastName;
+        this.isAdmin = isAdmin;
         this.email = email;
         this.password = password;
         this.authorities = authorities;
@@ -41,6 +48,8 @@ public class CustomUserDetails implements UserDetails {
         return new CustomUserDetails(
                 user.getId(),
                 user.getName(),
+                user.getLastName(),
+                user.getAdmin(),
                 user.getEmail(),
                 user.getHashedPassword(),
                 authorities
@@ -57,6 +66,14 @@ public class CustomUserDetails implements UserDetails {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public Boolean getAdmin() {
+        return isAdmin;
     }
 
     @Override
