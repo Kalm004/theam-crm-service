@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-@Api("Endpoints that will provide a CRUD for users")
+@Api(description = "Controller that provides a CRUD for users")
 public class UserController {
     private final UserService userService;
 
@@ -62,7 +62,13 @@ public class UserController {
     @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}")
     @ApiOperation("Mark the user as deleted, the user won't be part of the system unless it is created again")
-    public void deleteUser(@PathVariable(value = "id") Long id) {
+    @ApiResponses(value = {
+            @ApiResponse(code = 401, message = "User not authenticated"),
+            @ApiResponse(code = 403, message = "User doesn't have the ADMIN role"),
+            @ApiResponse(code = 404, message = "User with the specified id not found"),
+            @ApiResponse(code = 410, message = "User with the specified id has already been deleted"),
+    })
+    public void deleteUser(@ApiParam("Id of the user to be deleted") @PathVariable(value = "id") Long id) {
         userService.deleteUser(id);
     }
 

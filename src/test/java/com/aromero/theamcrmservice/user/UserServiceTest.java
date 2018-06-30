@@ -94,11 +94,33 @@ public class UserServiceTest {
 
     @Test
     @DirtiesContext
-    public void deleteUser() {
+    public void deleteExistingUser() {
         userService.deleteUser(2L);
 
         List<UserResponse> userList = userService.getAllUsers();
         Assert.assertEquals(NUMBER_OF_NOT_DELETED_USERS - 1, userList.size());
+    }
+
+    @Test
+    @DirtiesContext
+    public void deleteAlreadyDeletedUser() {
+        try {
+            userService.deleteUser(3L);
+            Assert.fail("An EntityGoneException should have been thrown");
+        } catch (EntityGoneException e) {
+            Assert.assertTrue(true);
+        }
+    }
+
+    @Test
+    @DirtiesContext
+    public void deleteUserNotFound() {
+        try {
+            userService.deleteUser(10L);
+            Assert.fail("An EntityNotFoundException should have been thrown");
+        } catch (EntityNotFoundException e) {
+            Assert.assertTrue(true);
+        }
     }
 
     @Test

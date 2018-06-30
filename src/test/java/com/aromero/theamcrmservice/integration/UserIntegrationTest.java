@@ -4,15 +4,16 @@ import com.aromero.theamcrmservice.auth.dto.LoginRequest;
 import com.aromero.theamcrmservice.auth.dto.LoginResponse;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
+import io.restassured.response.ValidatableResponse;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static io.restassured.RestAssured.given;
-import static io.restassured.RestAssured.get;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -50,78 +51,82 @@ public class UserIntegrationTest {
 
     @Test
     public void getAllUsers200AndGetListOfUsers() {
-        given().
-            header(new Header("Authorization", "Bearer " + adminLoginResponse.getToken())).
-        when().
-            get(baseUrl + "/users").
-        then().
-            statusCode(200).
+        getWithUserAndExpectedCodeResult(adminLoginResponse.getToken(), "/users", 200).
             body("size()", equalTo(2));
     }
 
     @Test
-    public void getAllUsers401WhenNotAuthenticated() {
-        get(baseUrl + "/users").
-        then().
-            statusCode(401);
-    }
-
-    @Test
-    public void getAllUsers403WhenUserDontHaveAdminRole() {
-        given().
-            header(new Header("Authorization", "Bearer " + noAdminLoginResponse.getToken())).
-        when().
-            get(baseUrl + "/users").
-        then().
-            statusCode(403);
-    }
-
-    @Test
     public void getUser200WhenUserIsAdmin() {
-        given().
-            header(new Header("Authorization", "Bearer " + adminLoginResponse.getToken())).
-        when().
-            get(baseUrl + "/users/1").
-        then().
-            statusCode(200).
+        getWithUserAndExpectedCodeResult(adminLoginResponse.getToken(), "/users/1", 200).
             body("name", equalTo("User1"));
     }
 
     @Test
-    public void getUser401WhenNotAuthorized() {
-        get(baseUrl + "/users/1").
-        then().
-            statusCode(401);
-    }
-
-    @Test
-    public void getUser403WhenUserIsNotAdmin() {
-        given().
-            header(new Header("Authorization", "Bearer " + noAdminLoginResponse.getToken())).
-        when().
-            get(baseUrl + "/users/1").
-        then().
-            statusCode(403);
-    }
-
-    @Test
     public void getUser404WhenUserDoesntExist() {
-        given().
-            header(new Header("Authorization", "Bearer " + adminLoginResponse.getToken())).
-        when().
-            get(baseUrl + "/users/100").
-        then().
-            statusCode(404);
+        getWithUserAndExpectedCodeResult(adminLoginResponse.getToken(), "/users/100", 404);
     }
 
     @Test
     public void getUser410WhenUserIsDeleted() {
-        given().
-            header(new Header("Authorization", "Bearer " + adminLoginResponse.getToken())).
+        getWithUserAndExpectedCodeResult(adminLoginResponse.getToken(), "/users/3", 410);
+    }
+
+    @Test
+    @DirtiesContext
+    public void deleteUser200WhenUserIsAdmin() {
+        deleteWithUserAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/2", 200);
+    }
+
+    @Test
+    public void deleteUser410WhenUserIsAlreadyReleased() {
+        deleteWithUserAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/3", 410);
+    }
+
+    @Test
+    public void deleteUser404WhenUserNeverExisted() {
+        deleteWithUserAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/100", 404);
+    }
+
+    @Test
+    public void error401WhenNotAuthenticatedForAllEndpoints() {
+        getWithUserAndExpectedCodeResult("", "/users", 401);
+
+        getWithUserAndExpectedCodeResult("", "/users/1", 401);
+
+        deleteWithUserAndExceptedStatusCode("", "/users/1", 401);
+    }
+
+    @Test
+    public void error403WhenUserDontHaveAdminRoleAllEndpoints() {
+        getWithUserAndExpectedCodeResult(noAdminLoginResponse.getToken(), "/users", 403);
+
+        getWithUserAndExpectedCodeResult(noAdminLoginResponse.getToken(), "/users/1", 403);
+
+        deleteWithUserAndExceptedStatusCode(noAdminLoginResponse.getToken(), "/users/1", 403);
+    }
+
+    private ValidatableResponse getWithUserAndExpectedCodeResult(
+            String token,
+            String url,
+            int expectedCode) {
+        return given().
+            header(new Header("Authorization", "Bearer " + token)).
         when().
-            get(baseUrl + "/users/3").
+            get(baseUrl + url).
         then().
-             statusCode(410);
+            statusCode(expectedCode);
+    }
+
+    private void deleteWithUserAndExceptedStatusCode(
+            String token,
+            String url,
+            int expectedStatusCode) {
+        given().
+            header(new Header("Authorization", "Bearer " + token)).
+        when().
+            delete(baseUrl + url).
+        then().
+            statusCode(expectedStatusCode);
     }
 }
 

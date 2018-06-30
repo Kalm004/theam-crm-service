@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
-@Api(value = "Controller that provides a login endpoint.")
+@Api(description = "Controller that provides a login endpoint.")
 public class AuthController {
     private final AuthService authService;
 

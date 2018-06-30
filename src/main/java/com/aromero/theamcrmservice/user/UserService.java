@@ -9,6 +9,7 @@ import com.aromero.theamcrmservice.user.mapper.UpdateUserRequestMapper;
 import com.aromero.theamcrmservice.user.mapper.UserResponseMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
@@ -37,15 +38,18 @@ public class UserService {
         this.updateUserRequestMapper = updateUserRequestMapper;
     }
 
+    @Transactional
     public List<UserResponse> getAllUsers() {
         List<User> users = userRepository.findByDeletedFalse();
         return convertUserListToUserResponseList(users);
     }
-    
+
+    @Transactional
     public UserResponse getUserResponseById(Long id) {
         return userResponseMapper.mapTo(getNotDeletedUserByIdOrThrow(id));
     }
 
+    @Transactional
     public void deleteUser(Long id) {
         User user = getNotDeletedUserByIdOrThrow(id);
 
@@ -54,6 +58,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void createUser(CreateUserRequest createUserRequest) {
         Optional<User> userFromDatabase = userRepository.findByEmail(createUserRequest.getEmail());
 
@@ -66,6 +71,7 @@ public class UserService {
         userRepository.save(userToBeSaved);
     }
 
+    @Transactional
     public void updateUser(Long userId, UpdateUserRequest updateUserRequest) {
         User currentUser = getNotDeletedUserByIdOrThrow(userId);
 
@@ -77,6 +83,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public void setUserAdminStatus(Long id, Boolean adminStatus) {
         User user = getNotDeletedUserByIdOrThrow(id);
         user.setAdmin(adminStatus);
