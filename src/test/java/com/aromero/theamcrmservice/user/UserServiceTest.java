@@ -1,5 +1,6 @@
 package com.aromero.theamcrmservice.user;
 
+import com.aromero.theamcrmservice.exception.EntityGoneException;
 import com.aromero.theamcrmservice.user.dto.CreateUserRequest;
 import com.aromero.theamcrmservice.user.dto.UpdateUserRequest;
 import com.aromero.theamcrmservice.user.dto.UserResponse;
@@ -40,11 +41,21 @@ public class UserServiceTest {
     }
 
     @Test
-    public void getUserByNotFound() {
+    public void getUserByIdNotFound() {
         try {
             userService.getUserResponseById(100L);
             Assert.fail("An EntityNotFoundException should have been thrown");
         } catch (EntityNotFoundException e) {
+            Assert.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void getDeletedUserById() {
+        try {
+            userService.getUserResponseById(3L);
+            Assert.fail("An EntityGoneException should have been thrown");
+        } catch (EntityGoneException e) {
             Assert.assertTrue(true);
         }
     }

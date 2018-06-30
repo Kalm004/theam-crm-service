@@ -42,7 +42,7 @@ public class UserController {
             @ApiResponse(code = 404, message = "User with the specified id not found"),
             @ApiResponse(code = 410, message = "User with the specified id was deleted"),
     })
-    public UserResponse getById(@PathVariable(value = "id") Long userId) {
+    public UserResponse getById(@ApiParam("Id of the user") @PathVariable(value = "id") Long userId) {
         return userService.getUserResponseById(userId);
     }
 

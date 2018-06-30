@@ -70,10 +70,58 @@ public class UserIntegrationTest {
     public void getAllUsers403WhenUserDontHaveAdminRole() {
         given().
             header(new Header("Authorization", "Bearer " + noAdminLoginResponse.getToken())).
-            when().
-        get(baseUrl + "/users").
-            then().
+        when().
+            get(baseUrl + "/users").
+        then().
             statusCode(403);
+    }
+
+    @Test
+    public void getUser200WhenUserIsAdmin() {
+        given().
+            header(new Header("Authorization", "Bearer " + adminLoginResponse.getToken())).
+        when().
+            get(baseUrl + "/users/1").
+        then().
+            statusCode(200).
+            body("name", equalTo("User1"));
+    }
+
+    @Test
+    public void getUser401WhenNotAuthorized() {
+        get(baseUrl + "/users/1").
+        then().
+            statusCode(401);
+    }
+
+    @Test
+    public void getUser403WhenUserIsNotAdmin() {
+        given().
+            header(new Header("Authorization", "Bearer " + noAdminLoginResponse.getToken())).
+        when().
+            get(baseUrl + "/users/1").
+        then().
+            statusCode(403);
+    }
+
+    @Test
+    public void getUser404WhenUserDoesntExist() {
+        given().
+            header(new Header("Authorization", "Bearer " + adminLoginResponse.getToken())).
+        when().
+            get(baseUrl + "/users/100").
+        then().
+            statusCode(404);
+    }
+
+    @Test
+    public void getUser410WhenUserIsDeleted() {
+        given().
+            header(new Header("Authorization", "Bearer " + adminLoginResponse.getToken())).
+        when().
+            get(baseUrl + "/users/3").
+        then().
+             statusCode(410);
     }
 }
 
