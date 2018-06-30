@@ -12,6 +12,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.get;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -56,6 +57,13 @@ public class UserIntegrationTest {
         then().
             statusCode(200).
             body("size()", equalTo(2));
+    }
+
+    @Test
+    public void getAllUsers401WhenNotAuthenticated() {
+        get(baseUrl + "/users").
+        then().
+            statusCode(401);
     }
 
     @Test

@@ -3,10 +3,7 @@ package com.aromero.theamcrmservice.user;
 import com.aromero.theamcrmservice.user.dto.CreateUserRequest;
 import com.aromero.theamcrmservice.user.dto.UpdateUserRequest;
 import com.aromero.theamcrmservice.user.dto.UserResponse;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +24,10 @@ public class UserController {
 
     @Secured("ROLE_ADMIN")
     @GetMapping
-    @ApiOperation("Get all not deleted users")
+    @ApiOperation(value = "Get all not deleted users")
     @ApiResponses(value = {
-            @ApiResponse(code = 401, message = "User not authenticated or it doesn't have the ADMIN role")
+            @ApiResponse(code = 401, message = "User not authenticated"),
+            @ApiResponse(code = 403, message = "User doesn't have the ADMIN role")
     })
     public List<UserResponse> getAll() {
         return userService.getAllUsers();
@@ -39,7 +37,10 @@ public class UserController {
     @GetMapping("/{id}")
     @ApiOperation("Get an user by id")
     @ApiResponses(value = {
-            @ApiResponse(code = 401, message = "User not authenticated or it doesn't have the ADMIN role")
+            @ApiResponse(code = 401, message = "User not authenticated"),
+            @ApiResponse(code = 403, message = "User doesn't have the ADMIN role"),
+            @ApiResponse(code = 404, message = "User with the specified id not found"),
+            @ApiResponse(code = 410, message = "User with the specified id was deleted"),
     })
     public UserResponse getById(@PathVariable(value = "id") Long userId) {
         return userService.getUserResponseById(userId);

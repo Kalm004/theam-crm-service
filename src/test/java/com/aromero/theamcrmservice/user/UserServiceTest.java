@@ -18,6 +18,8 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class UserServiceTest {
+    private static final int NUMBER_OF_NOT_DELETED_USERS = 2;
+
     @Autowired
     private UserService userService;
 
@@ -27,7 +29,7 @@ public class UserServiceTest {
     public void getAllUsers() {
         List<UserResponse> allUsers = userService.getAllUsers();
 
-        Assert.assertEquals(2, allUsers.size());
+        Assert.assertEquals(NUMBER_OF_NOT_DELETED_USERS, allUsers.size());
     }
     @Test
     public void getUserByIdFound() {
@@ -85,7 +87,7 @@ public class UserServiceTest {
         userService.deleteUser(2L);
 
         List<UserResponse> userList = userService.getAllUsers();
-        Assert.assertEquals(1, userList.size());
+        Assert.assertEquals(NUMBER_OF_NOT_DELETED_USERS - 1, userList.size());
     }
 
     @Test
