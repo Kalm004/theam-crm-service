@@ -9,20 +9,23 @@ public class User {
     @Column(columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false)
     private String email;
 
-    @Column(name = "hashed_password")
+    @Column(name = "hashed_password", nullable = false)
     private String hashedPassword;
 
-    @Column(name = "admin")
-    private Boolean admin;
+    @Column(name = "admin", nullable = false)
+    private boolean admin;
+
+    @Column(name = "deleted", nullable = false)
+    private boolean deleted;
 
     public User() {
     }
@@ -67,11 +70,19 @@ public class User {
         this.hashedPassword = hashedPassword;
     }
 
-    public Boolean getAdmin() {
+    public boolean isAdmin() {
         return admin;
     }
 
-    public void setAdmin(Boolean admin) {
+    public void setAdmin(boolean admin) {
         this.admin = admin;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

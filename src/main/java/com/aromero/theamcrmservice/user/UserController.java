@@ -1,49 +1,66 @@
 package com.aromero.theamcrmservice.user;
 
-import org.modelmapper.ModelMapper;
+import com.aromero.theamcrmservice.user.dto.CreateUserRequest;
+import com.aromero.theamcrmservice.user.dto.UpdateUserRequest;
+import com.aromero.theamcrmservice.user.dto.UserResponse;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.security.RolesAllowed;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@Api("Endpoints that will provide a CRUD for users")
 public class UserController {
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
     @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @Secured("ROLE_ADMIN")
     @GetMapping
-    public List<User> getAll() {
+    @ApiOperation("Get all not deleted users")
+    @ApiResponses(value = {
+            @ApiResponse(code = 401, message = "User not authenticated or it doesn't have the ADMIN role")
+    })
+    public List<UserResponse> getAll() {
         return userService.getAllUsers();
     }
 
     @Secured("ROLE_ADMIN")
+    @GetMapping("/{id}")
+    @ApiOperation("Get an user by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 401, message = "User not authenticated or it doesn't have the ADMIN role")
+    })
+    public UserResponse getById(@PathVariable(value = "id") Long userId) {
+        return userService.getUserResponseById(userId);
+    }
+
+    @Secured("ROLE_ADMIN")
     @PostMapping
-    public void createUser(@RequestBody UserCreationDTO user) {
-        userService.saveUser(convertToEntity(user));
+    public void createUser(@RequestBody CreateUserRequest user) {
+        userService.createUser(user);
     }
 
     @Secured("ROLE_ADMIN")
     @PutMapping("/{id}")
-    public void updateUser(@PathVariable(value = "id") Long id, @RequestBody User user) {
-        userService.saveUser(user);
+    public void updateUser(@PathVariable(value = "id") Long id, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
+        updateUserRequest.setId(id);
+        userService.updateUser(id, updateUserRequest);
     }
 
     @Secured("ROLE_ADMIN")
     @DeleteMapping("/{id}")
+    @ApiOperation("Mark the user as deleted, the user won't be part of the system unless it is created again")
     public void deleteUser(@PathVariable(value = "id") Long id) {
         userService.deleteUser(id);
     }
@@ -58,15 +75,5 @@ public class UserController {
     @DeleteMapping("/{id}/admin")
     public void setUserAsNoAdmin(@PathVariable(value = "id") Long id) {
         userService.setUserAdminStatus(id, false);
-    }
-
-    private User convertToEntity(UserCreationDTO userCreationDTO) {
-        User user = modelMapper().map(userCreationDTO, User.class);
-
-        user.setHashedPassword(passwordEncoder.encode(userCreationDTO.getPassword()));
-
-        //TODO: check if the user already exist in the database
-
-        return user;
     }
 }

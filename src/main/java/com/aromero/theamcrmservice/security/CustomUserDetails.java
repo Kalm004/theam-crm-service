@@ -41,7 +41,7 @@ public class CustomUserDetails implements UserDetails {
 
     public static CustomUserDetails create(User user) {
         List<GrantedAuthority> authorities = new ArrayList<>();
-        if (user.getAdmin()) {
+        if (user.isAdmin()) {
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
         }
 
@@ -49,7 +49,7 @@ public class CustomUserDetails implements UserDetails {
                 user.getId(),
                 user.getName(),
                 user.getLastName(),
-                user.getAdmin(),
+                user.isAdmin(),
                 user.getEmail(),
                 user.getHashedPassword(),
                 authorities

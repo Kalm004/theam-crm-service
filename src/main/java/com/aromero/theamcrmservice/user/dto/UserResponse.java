@@ -1,4 +1,4 @@
-package com.aromero.theamcrmservice.user;
+package com.aromero.theamcrmservice.user.dto;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -1,7 +1,8 @@
 package com.aromero.theamcrmservice.customer;
 
+import com.aromero.theamcrmservice.security.CurrentUser;
+import com.aromero.theamcrmservice.security.CustomUserDetails;
 import com.aromero.theamcrmservice.user.User;
-import com.aromero.theamcrmservice.user.UserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -16,9 +17,6 @@ import java.util.Optional;
 public class CustomerController {
     @Autowired
     private CustomerService customerService;
-
-    @Autowired
-    private UserService userService;
 
     @Bean
     public ModelMapper modelMapper() {
@@ -41,16 +39,17 @@ public class CustomerController {
     }
 
     @PostMapping
-    public void createCustomer(@RequestBody CustomerImportDTO customer) {
-        //TODO: get the user that did the request
-        User user = userService.getUserById(1L).orElseThrow(EntityNotFoundException::new);
+    public void createCustomer(@RequestBody CustomerImportDTO customer, @CurrentUser CustomUserDetails customUserDetails) {
+        User user = new User();
+        user.setId(customUserDetails.getId());
         customerService.saveCustomer(convertToEntity(customer), user);
     }
 
     @PutMapping("/{id}")
-    public void updateCustomer(@PathVariable(value = "id") Long id, @RequestBody CustomerImportDTO customer) {
-        //TODO: get the user that did the request
-        User user = userService.getUserById(1L).orElseThrow(EntityNotFoundException::new);
+    public void updateCustomer(@PathVariable(value = "id") Long id, @RequestBody CustomerImportDTO customer,
+                               @CurrentUser CustomUserDetails customUserDetails) {
+        User user = new User();
+        user.setId(customUserDetails.getId());
         customerService.saveCustomer(convertToEntity(customer), user);
     }
 

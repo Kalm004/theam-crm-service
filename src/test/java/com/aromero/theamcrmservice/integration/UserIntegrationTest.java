@@ -1,7 +1,7 @@
 package com.aromero.theamcrmservice.integration;
 
-import com.aromero.theamcrmservice.auth.LoginRequest;
-import com.aromero.theamcrmservice.auth.LoginResponse;
+import com.aromero.theamcrmservice.auth.dto.LoginRequest;
+import com.aromero.theamcrmservice.auth.dto.LoginResponse;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
 import org.junit.Before;
@@ -22,16 +22,26 @@ public class UserIntegrationTest {
 
     private String baseUrl;
 
-    private LoginResponse loginResponse;
+    private LoginResponse adminLoginResponse;
+
+    private LoginResponse noAdminLoginResponse;
 
     @Before
     public void before() {
         baseUrl = "http://localhost:" + port;
 
-        loginResponse =
+        adminLoginResponse =
             given().
                 contentType(ContentType.JSON).
                 body(new LoginRequest("user2@domain.com", "test")).
+            post(baseUrl + "/login").
+                body().
+                as(LoginResponse.class);
+
+        noAdminLoginResponse =
+            given().
+                contentType(ContentType.JSON).
+                body(new LoginRequest("user1@domain.com", "test")).
             post(baseUrl + "/login").
                 body().
                 as(LoginResponse.class);
@@ -40,12 +50,22 @@ public class UserIntegrationTest {
     @Test
     public void getAllUsers200AndGetListOfUsers() {
         given().
-            header(new Header("Authorization", "Bearer " + loginResponse.getToken())).
+            header(new Header("Authorization", "Bearer " + adminLoginResponse.getToken())).
         when().
             get(baseUrl + "/users").
         then().
             statusCode(200).
             body("size()", equalTo(2));
+    }
+
+    @Test
+    public void getAllUsers403WhenUserDontHaveAdminRole() {
+        given().
+            header(new Header("Authorization", "Bearer " + noAdminLoginResponse.getToken())).
+            when().
+        get(baseUrl + "/users").
+            then().
+            statusCode(403);
     }
 }
 

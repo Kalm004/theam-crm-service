@@ -1,11 +1,11 @@
 package com.aromero.theamcrmservice.auth;
 
+import com.aromero.theamcrmservice.auth.dto.LoginRequest;
+import com.aromero.theamcrmservice.auth.dto.LoginResponse;
+import com.aromero.theamcrmservice.auth.mapper.CustomUserDetailsMapper;
 import com.aromero.theamcrmservice.security.CustomUserDetails;
 import com.aromero.theamcrmservice.security.JwtTokenProvider;
-import com.aromero.theamcrmservice.user.UserResponse;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,15 +21,15 @@ public class AuthService {
 
     private final JwtTokenProvider tokenProvider;
 
-    @Bean
-    public ModelMapper modelMapper() {
-        return new ModelMapper();
-    }
+    private final CustomUserDetailsMapper customUserDetailsMapper;
 
     @Autowired
-    public AuthService(AuthenticationManager authenticationManager, JwtTokenProvider tokenProvider) {
+    public AuthService(AuthenticationManager authenticationManager,
+                       JwtTokenProvider tokenProvider,
+                       CustomUserDetailsMapper customUserDetailsMapper) {
         this.authenticationManager = authenticationManager;
         this.tokenProvider = tokenProvider;
+        this.customUserDetailsMapper = customUserDetailsMapper;
     }
 
     LoginResponse login(@Valid @RequestBody LoginRequest loginRequest) {
@@ -45,12 +45,9 @@ public class AuthService {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
         return new LoginResponse(
-                convertUserDetailsToUserResponse(customUserDetails),
+                customUserDetailsMapper.mapFrom(customUserDetails),
                 tokenProvider.generateToken(customUserDetails)
         );
     }
 
-    private UserResponse convertUserDetailsToUserResponse(CustomUserDetails customUserDetails) {
-        return modelMapper().map(customUserDetails, UserResponse.class);
-    }
 }

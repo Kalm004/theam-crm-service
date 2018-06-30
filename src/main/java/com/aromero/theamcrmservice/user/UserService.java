@@ -1,40 +1,102 @@
 package com.aromero.theamcrmservice.user;
 
+import com.aromero.theamcrmservice.exception.EntityGoneException;
+import com.aromero.theamcrmservice.user.dto.CreateUserRequest;
+import com.aromero.theamcrmservice.user.dto.UpdateUserRequest;
+import com.aromero.theamcrmservice.user.dto.UserResponse;
+import com.aromero.theamcrmservice.user.mapper.CreateUserRequestMapper;
+import com.aromero.theamcrmservice.user.mapper.UpdateUserRequestMapper;
+import com.aromero.theamcrmservice.user.mapper.UserResponseMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    public List<User> getAllUsers() {
-        return (List<User>) userRepository.findAll();
+    private final UserResponseMapper userResponseMapper;
+
+    private final CreateUserRequestMapper createUserRequestMapper;
+
+    private final UpdateUserRequestMapper updateUserRequestMapper;
+
+    @Autowired
+    public UserService(UserRepository userRepository,
+                       UserResponseMapper userResponseMapper,
+                       CreateUserRequestMapper createUserRequestMapper,
+                       UpdateUserRequestMapper updateUserRequestMapper) {
+        this.userRepository = userRepository;
+        this.userResponseMapper = userResponseMapper;
+        this.createUserRequestMapper = createUserRequestMapper;
+        this.updateUserRequestMapper = updateUserRequestMapper;
+    }
+
+    public List<UserResponse> getAllUsers() {
+        List<User> users = userRepository.findByDeletedFalse();
+        return convertUserListToUserResponseList(users);
     }
     
-    public Optional<User> getUserById(Long id) {
-        return userRepository.findById(id);
+    public UserResponse getUserResponseById(Long id) {
+        return userResponseMapper.mapTo(getNotDeletedUserByIdOrThrow(id));
     }
 
-    public void saveUser(User user) {
+    public void deleteUser(Long id) {
+        User user = getNotDeletedUserByIdOrThrow(id);
+
+        user.setDeleted(true);
+
         userRepository.save(user);
     }
-    
-    public void deleteUser(Long id) {
-        userRepository.deleteById(id);
+
+    public void createUser(CreateUserRequest createUserRequest) {
+        Optional<User> userFromDatabase = userRepository.findByEmail(createUserRequest.getEmail());
+
+        if (userFromDatabase.isPresent() && !userFromDatabase.get().isDeleted()) {
+            throw new EntityExistsException("A user with the e-mail" + createUserRequest.getEmail() + " already exists");
+        }
+        User userToBeSaved = createUserRequestMapper.mapFrom(createUserRequest);
+        userFromDatabase.ifPresent(user -> userToBeSaved.setId(user.getId()));
+
+        userRepository.save(userToBeSaved);
+    }
+
+    public void updateUser(Long userId, UpdateUserRequest updateUserRequest) {
+        User currentUser = getNotDeletedUserByIdOrThrow(userId);
+
+        User user = updateUserRequestMapper.mapFrom(updateUserRequest);
+        if (user.getHashedPassword() == null) {
+            user.setHashedPassword(currentUser.getHashedPassword());
+        }
+
+        userRepository.save(user);
     }
 
     public void setUserAdminStatus(Long id, Boolean adminStatus) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            user.get().setAdmin(adminStatus);
-            userRepository.save(user.get());
-        } else {
-            throw new EntityNotFoundException("User with id = " + id + " not found");
-        }
+        User user = getNotDeletedUserByIdOrThrow(id);
+        user.setAdmin(adminStatus);
+        userRepository.save(user);
     }
+
+    private User getNotDeletedUserByIdOrThrow(Long id) {
+        Optional<User> user = userRepository.findById(id);
+
+        if (user.orElseThrow(EntityNotFoundException::new).isDeleted()) {
+            throw new EntityGoneException("User with id " + id + " has been deleted");
+        }
+        return user.get();
+    }
+
+    private List<UserResponse> convertUserListToUserResponseList(List<User> users) {
+        return users
+                .stream()
+                .map(userResponseMapper::mapTo)
+                .collect(Collectors.toList());
+    }
+
 }

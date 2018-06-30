@@ -1,5 +1,7 @@
 package com.aromero.theamcrmservice.auth;
 
+import com.aromero.theamcrmservice.auth.dto.LoginRequest;
+import com.aromero.theamcrmservice.auth.dto.LoginResponse;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

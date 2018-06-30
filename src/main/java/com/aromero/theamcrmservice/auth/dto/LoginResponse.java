@@ -1,6 +1,6 @@
-package com.aromero.theamcrmservice.auth;
+package com.aromero.theamcrmservice.auth.dto;
 
-import com.aromero.theamcrmservice.user.UserResponse;
+import com.aromero.theamcrmservice.user.dto.UserResponse;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
@@ -11,7 +11,7 @@ public class LoginResponse {
     @ApiModelProperty(notes = "User information", required = true)
     private UserResponse user;
 
-    LoginResponse(UserResponse user, String token) {
+    public LoginResponse(UserResponse user, String token) {
         this.user = user;
         this.token = token;
     }

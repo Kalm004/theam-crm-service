@@ -1,16 +1,19 @@
 package com.aromero.theamcrmservice.user;
 
+import com.aromero.theamcrmservice.user.dto.CreateUserRequest;
+import com.aromero.theamcrmservice.user.dto.UpdateUserRequest;
+import com.aromero.theamcrmservice.user.dto.UserResponse;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -18,60 +21,62 @@ public class UserServiceTest {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    //TODO: test that deleted users are not returned by the read endpoints
 
     @Test
     public void getAllUsers() {
-        List<User> allUsers = userService.getAllUsers();
+        List<UserResponse> allUsers = userService.getAllUsers();
 
         Assert.assertEquals(2, allUsers.size());
     }
     @Test
     public void getUserByIdFound() {
-        Optional<User> user = userService.getUserById(1L);
+        UserResponse userResponse = userService.getUserResponseById(1L);
 
-        Assert.assertTrue(user.isPresent());
+        Assert.assertTrue(true);
+        Assert.assertNotNull(userResponse);
     }
 
     @Test
     public void getUserByNotFound() {
-        Optional<User> user = userService.getUserById(100L);
-
-        Assert.assertFalse(user.isPresent());
+        try {
+            userService.getUserResponseById(100L);
+            Assert.fail("An EntityNotFoundException should have been thrown");
+        } catch (EntityNotFoundException e) {
+            Assert.assertTrue(true);
+        }
     }
 
     @Test
     @DirtiesContext
     public void addUser() {
-        User user = new User();
+        CreateUserRequest user = new CreateUserRequest();
         user.setName("Name2");
         user.setLastName("Lastname2");
         user.setEmail("name@mail.com");
-        user.setHashedPassword("1234");
+        user.setPassword("test");
         user.setAdmin(false);
 
-        userService.saveUser(user);
+        userService.createUser(user);
 
-        List<User> userList = userService.getAllUsers();
+        List<UserResponse> userList = userService.getAllUsers();
         Assert.assertTrue(userList.stream().anyMatch(c -> c.getName().equals("Name2")));
     }
 
     @Test
     @DirtiesContext
     public void modifyUser() {
-        Optional<User> user = userService.getUserById(1L);
+        UserResponse userResponse = userService.getUserResponseById(1L);
 
-        Assert.assertTrue(user.isPresent());
+        userResponse.setName("ModifiedName");
 
-        user.get().setName("ModifiedName");
+        UpdateUserRequest updateUserRequest = new ModelMapper().map(userResponse, UpdateUserRequest.class);
+        userService.updateUser(1L, updateUserRequest);
 
-        userService.saveUser(user.get());
+        UserResponse modifiedUserResponse = userService.getUserResponseById(1L);
 
-        Optional<User> modifiedUser = userService.getUserById(1L);
-
-        Assert.assertTrue(modifiedUser.isPresent());
-        Assert.assertEquals("ModifiedName", modifiedUser.get().getName());
+        Assert.assertNotNull(modifiedUserResponse);
+        Assert.assertEquals("ModifiedName", modifiedUserResponse.getName());
     }
 
     @Test
@@ -79,7 +84,7 @@ public class UserServiceTest {
     public void deleteUser() {
         userService.deleteUser(2L);
 
-        List<User> userList = userService.getAllUsers();
+        List<UserResponse> userList = userService.getAllUsers();
         Assert.assertEquals(1, userList.size());
     }
 
@@ -88,8 +93,8 @@ public class UserServiceTest {
     public void setNoAdminUserAsAdmin() {
         userService.setUserAdminStatus(1L, true);
 
-        Optional<User> user = userService.getUserById(1L);
-        Assert.assertTrue(user.get().getAdmin());
+        UserResponse userResponse = userService.getUserResponseById(1L);
+        Assert.assertTrue(userResponse.getAdmin());
     }
 
     @Test
@@ -97,7 +102,7 @@ public class UserServiceTest {
     public void setAdminUserAsNoAdmin() {
         userService.setUserAdminStatus(2L, false);
 
-        Optional<User> user = userService.getUserById(2L);
-        Assert.assertFalse(user.get().getAdmin());
+        UserResponse userResponse = userService.getUserResponseById(2L);
+        Assert.assertFalse(userResponse.getAdmin());
     }
 }

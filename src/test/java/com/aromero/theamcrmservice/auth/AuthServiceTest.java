@@ -1,5 +1,7 @@
 package com.aromero.theamcrmservice.auth;
 
+import com.aromero.theamcrmservice.auth.dto.LoginRequest;
+import com.aromero.theamcrmservice.auth.dto.LoginResponse;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

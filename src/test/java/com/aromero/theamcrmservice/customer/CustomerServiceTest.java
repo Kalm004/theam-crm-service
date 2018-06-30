@@ -1,7 +1,6 @@
 package com.aromero.theamcrmservice.customer;
 
 import com.aromero.theamcrmservice.user.User;
-import com.aromero.theamcrmservice.user.UserService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -10,7 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,9 +17,6 @@ import java.util.Optional;
 public class CustomerServiceTest {
     @Autowired
     private CustomerService customerService;
-
-    @Autowired
-    private UserService userService;
 
     @Test
     public void getAllCustomers() {
@@ -51,11 +46,12 @@ public class CustomerServiceTest {
         Customer customer = new Customer();
         customer.setName("Name2");
         customer.setSurname("Surname2");
-        customer.setCreatedByUser(userService.getUserById(1L).get());
+        User createdByUser = new User();
+        createdByUser.setId(1L);
+        customer.setCreatedByUser(createdByUser);
 
-        User user = userService.getUserById(1L).orElseThrow(EntityNotFoundException::new);
 
-        customerService.saveCustomer(customer, user);
+        customerService.saveCustomer(customer, createdByUser);
 
         List<Customer> customerList = customerService.getAllCustomers();
         Assert.assertTrue(customerList.stream().anyMatch(c -> c.getName().equals("Name2")));
@@ -70,9 +66,10 @@ public class CustomerServiceTest {
 
         customer.get().setName("ModifiedName");
 
-        User user = userService.getUserById(1L).orElseThrow(EntityNotFoundException::new);
+        User modifiedByUser = new User();
+        modifiedByUser.setId(1L);
 
-        customerService.saveCustomer(customer.get(), user);
+        customerService.saveCustomer(customer.get(), modifiedByUser);
 
         Optional<Customer> modifiedCustomer = customerService.getCustomerById(1L);
 

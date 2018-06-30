@@ -1,7 +1,7 @@
 package com.aromero.theamcrmservice.integration;
 
-import com.aromero.theamcrmservice.auth.LoginRequest;
-import com.aromero.theamcrmservice.auth.LoginResponse;
+import com.aromero.theamcrmservice.auth.dto.LoginRequest;
+import com.aromero.theamcrmservice.auth.dto.LoginResponse;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
 import org.junit.Before;

@@ -1,6 +1,6 @@
-package com.aromero.theamcrmservice.user;
+package com.aromero.theamcrmservice.user.dto;
 
-public class UserCreationDTO {
+public class CreateUserRequest {
     private String name;
 
     private String lastName;
@@ -9,9 +9,9 @@ public class UserCreationDTO {
 
     private String password;
 
-    private Boolean admin;
+    private boolean admin;
 
-    public UserCreationDTO() {
+    public CreateUserRequest() {
     }
 
     public String getName() {
@@ -46,11 +46,11 @@ public class UserCreationDTO {
         this.password = password;
     }
 
-    public Boolean getAdmin() {
+    public boolean isAdmin() {
         return admin;
     }
 
-    public void setAdmin(Boolean admin) {
+    public void setAdmin(boolean admin) {
         this.admin = admin;
     }
 }
