@@ -13,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
@@ -62,18 +63,47 @@ public class UserServiceTest {
 
     @Test
     @DirtiesContext
-    public void addUser() {
-        CreateUserRequest user = new CreateUserRequest();
-        user.setName("Name2");
-        user.setLastName("Lastname2");
-        user.setEmail("name@mail.com");
-        user.setPassword("test");
-        user.setAdmin(false);
+    public void createNewUser() {
+        CreateUserRequest userToCreate = new CreateUserRequest();
+        userToCreate.setName("Name2");
+        userToCreate.setLastName("Lastname2");
+        userToCreate.setEmail("name@mail.com");
+        userToCreate.setPassword("test");
+        userToCreate.setAdmin(false);
 
-        userService.createUser(user);
+        UserResponse userResponse = userService.createUser(userToCreate);
 
-        List<UserResponse> userList = userService.getAllUsers();
-        Assert.assertTrue(userList.stream().anyMatch(c -> c.getName().equals("Name2")));
+        Assert.assertEquals("Name2", userResponse.getName());
+    }
+
+    @Test
+    public void tryToCreateUserWithExistingEmail() {
+        CreateUserRequest userToCreate = new CreateUserRequest();
+        userToCreate.setName("NewUser");
+        userToCreate.setLastName("Lastname");
+        userToCreate.setEmail("user1@domain.com");
+        userToCreate.setPassword("test");
+        userToCreate.setAdmin(false);
+
+        try {
+            userService.createUser(userToCreate);
+            Assert.fail("An EntityExistsException should have been thrown");
+        } catch (EntityExistsException e) {
+            Assert.assertTrue(true);
+        }
+    }
+
+    @Test
+    public void createDeletedUserKeepSameId() {
+        CreateUserRequest userToCreate = new CreateUserRequest();
+        userToCreate.setName("NewUser");
+        userToCreate.setLastName("Lastname");
+        userToCreate.setEmail("deleted@domain.com");
+        userToCreate.setPassword("test");
+        userToCreate.setAdmin(false);
+
+        UserResponse userResponse = userService.createUser(userToCreate);
+        Assert.assertEquals((Long)3L, userResponse.getId());
     }
 
     @Test

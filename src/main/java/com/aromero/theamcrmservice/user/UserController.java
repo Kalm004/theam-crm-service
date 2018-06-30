@@ -48,8 +48,8 @@ public class UserController {
 
     @Secured("ROLE_ADMIN")
     @PostMapping
-    public void createUser(@RequestBody CreateUserRequest user) {
-        userService.createUser(user);
+    public UserResponse createUser(@RequestBody CreateUserRequest user) {
+        return userService.createUser(user);
     }
 
     @Secured("ROLE_ADMIN")

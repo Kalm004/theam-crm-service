@@ -59,7 +59,7 @@ public class UserService {
     }
 
     @Transactional
-    public void createUser(CreateUserRequest createUserRequest) {
+    public UserResponse createUser(CreateUserRequest createUserRequest) {
         Optional<User> userFromDatabase = userRepository.findByEmail(createUserRequest.getEmail());
 
         if (userFromDatabase.isPresent() && !userFromDatabase.get().isDeleted()) {
@@ -69,6 +69,8 @@ public class UserService {
         userFromDatabase.ifPresent(user -> userToBeSaved.setId(user.getId()));
 
         userRepository.save(userToBeSaved);
+
+        return userResponseMapper.mapTo(userToBeSaved);
     }
 
     @Transactional
