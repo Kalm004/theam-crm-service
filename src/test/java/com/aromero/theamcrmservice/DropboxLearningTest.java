@@ -1,8 +1,10 @@
 package com.aromero.theamcrmservice;
 
+import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.GetTemporaryLinkResult;
 import com.dropbox.core.v2.users.FullAccount;
 import org.junit.Assert;
@@ -15,11 +17,12 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-@Ignore
+//@Ignore
 public class DropboxLearningTest {
     private final static String FILE_NAME = "spring_logo.png";
 
@@ -47,6 +50,17 @@ public class DropboxLearningTest {
         GetTemporaryLinkResult getTemporaryLinkResult = client.files().getTemporaryLink("/" + FILE_NAME);
         System.out.println(getTemporaryLinkResult.getLink());
         Assert.assertNotNull(getTemporaryLinkResult.getLink());
+
+        deleteFile();
+    }
+
+
+    @Test
+    public void getThumbnail() throws DbxException, IOException {
+        fileUpload();
+
+        DbxDownloader<FileMetadata> fileMetadataDbxDownloader = client.files().getThumbnail("/" + FILE_NAME);
+        fileMetadataDbxDownloader.download(new FileOutputStream("D:\\Descargas\\test.png"));
 
         deleteFile();
     }
