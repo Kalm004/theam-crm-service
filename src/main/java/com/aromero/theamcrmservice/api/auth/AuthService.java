@@ -45,7 +45,7 @@ public class AuthService {
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
         return new LoginResponse(
-                customUserDetailsMapper.mapFrom(customUserDetails),
+                customUserDetailsMapper.mapToUserResponse(customUserDetails),
                 tokenProvider.generateToken(customUserDetails)
         );
     }

@@ -46,7 +46,7 @@ public class UserService {
 
     @Transactional
     public UserResponse getUserResponseById(Long id) {
-        return userResponseMapper.mapTo(getNotDeletedUserByIdOrThrow(id));
+        return userResponseMapper.mapToUserResponse(getNotDeletedUserByIdOrThrow(id));
     }
 
     @Transactional
@@ -65,19 +65,19 @@ public class UserService {
         if (userFromDatabase.isPresent() && !userFromDatabase.get().isDeleted()) {
             throw new EntityExistsException("A user with the e-mail" + createUserRequest.getEmail() + " already exists");
         }
-        User userToBeSaved = createUserRequestMapper.mapFrom(createUserRequest);
+        User userToBeSaved = createUserRequestMapper.mapToUser(createUserRequest);
         userFromDatabase.ifPresent(user -> userToBeSaved.setId(user.getId()));
 
         userRepository.save(userToBeSaved);
 
-        return userResponseMapper.mapTo(userToBeSaved);
+        return userResponseMapper.mapToUserResponse(userToBeSaved);
     }
 
     @Transactional
     public void updateUser(Long userId, UpdateUserRequest updateUserRequest) {
         User userFromDatabase = getNotDeletedUserByIdOrThrow(userId);
 
-        User userToBeSaved = updateUserRequestMapper.mapFrom(updateUserRequest);
+        User userToBeSaved = updateUserRequestMapper.mapToUser(updateUserRequest);
         userToBeSaved.setId(userId);
         userToBeSaved.setEmail(userFromDatabase.getEmail());
         if (userToBeSaved.getHashedPassword() == null) {
@@ -109,7 +109,7 @@ public class UserService {
     private List<UserResponse> convertUserListToUserResponseList(List<User> users) {
         return users
                 .stream()
-                .map(userResponseMapper::mapTo)
+                .map(userResponseMapper::mapToUserResponse)
                 .collect(Collectors.toList());
     }
 

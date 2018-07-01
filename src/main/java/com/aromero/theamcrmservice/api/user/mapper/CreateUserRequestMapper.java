@@ -1,14 +1,12 @@
 package com.aromero.theamcrmservice.api.user.mapper;
 
-import com.aromero.theamcrmservice.mapper.Mapper;
 import com.aromero.theamcrmservice.api.user.User;
 import com.aromero.theamcrmservice.api.user.dto.CreateUserRequest;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
-public class CreateUserRequestMapper implements Mapper<User, CreateUserRequest> {
+public class CreateUserRequestMapper {
     private ModelMapper modelMapper;
 
     @Autowired
@@ -18,13 +16,7 @@ public class CreateUserRequestMapper implements Mapper<User, CreateUserRequest> 
         this.modelMapper = modelMapper;
     }
 
-    @Override
-    public CreateUserRequest mapTo(User user) {
-        throw new NotImplementedException();
-    }
-
-    @Override
-    public User mapFrom(CreateUserRequest createUserRequest) {
+    public User mapToUser(CreateUserRequest createUserRequest) {
         User user = modelMapper.map(createUserRequest, User.class);
 
         user.setHashedPassword(passwordEncoder.encode(createUserRequest.getPassword()));
