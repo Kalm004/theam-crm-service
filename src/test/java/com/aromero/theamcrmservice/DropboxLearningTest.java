@@ -22,7 +22,7 @@ import java.io.IOException;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-//@Ignore
+@Ignore
 public class DropboxLearningTest {
     private final static String FILE_NAME = "spring_logo.png";
 
@@ -53,7 +53,6 @@ public class DropboxLearningTest {
 
         deleteFile();
     }
-
 
     @Test
     public void getThumbnail() throws DbxException, IOException {

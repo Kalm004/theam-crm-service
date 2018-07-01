@@ -43,13 +43,13 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     }
 
     @ExceptionHandler(AccessDeniedException.class)
-    public final ResponseEntity<ExceptionResponse> handleBadCredentialsException(AccessDeniedException ex, WebRequest request) {
+    public final ResponseEntity<ExceptionResponse> handleAccessDeneidException(AccessDeniedException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(ex.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(EntityGoneException.class)
-    public final ResponseEntity<ExceptionResponse> handleBadCredentialsException(EntityGoneException ex, WebRequest request) {
+    public final ResponseEntity<ExceptionResponse> handleEntityGoneException(EntityGoneException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(ex.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.GONE);
     }
@@ -61,7 +61,7 @@ public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptio
     }
 
     @ExceptionHandler(ValidationException.class)
-    public final ResponseEntity<ExceptionResponse> handleBadCredentialsException(ValidationException ex, WebRequest request) {
+    public final ResponseEntity<ExceptionResponse> handleValidationException(ValidationException ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(ex.getMessage());
         return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
     }
