@@ -1,5 +1,7 @@
 package com.aromero.theamcrmservice.api.customerPhoto;
 
+import com.aromero.theamcrmservice.security.CurrentUser;
+import com.aromero.theamcrmservice.security.CustomUserDetails;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,12 +19,16 @@ public class CustomerPhotoController {
     }
 
     @PostMapping
-    public void handleFileUpload(@PathVariable("id") Long customerId, @RequestParam("file") MultipartFile file) throws IOException {
-        customerPhotoService.saveCustomerPhoto(customerId, file);
+    public void handleFileUpload(
+            @PathVariable("id") Long customerId,
+            @RequestParam("file") MultipartFile file,
+            @CurrentUser CustomUserDetails currentUser
+    ) throws IOException {
+        customerPhotoService.saveCustomerPhoto(customerId, file, currentUser);
     }
 
     @GetMapping
-    public String getPhotoUrl() {
-        return "";
+    public String getPhotoUrl(@PathVariable("id") Long customerId) {
+        return customerPhotoService.getTempLink(customerId);
     }
 }

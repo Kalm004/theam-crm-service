@@ -21,7 +21,7 @@ public class CustomerService {
     }
 
     public void saveCustomer(Customer customer, User user) {
-        if (customer.getId() != null) {
+        if (customer.getId() == null) {
             customer.setCreatedByUser(user);
         } else {
             customer.setModifiedByUser(user);

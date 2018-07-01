@@ -1,7 +1,9 @@
 package com.aromero.theamcrmservice.storage;
 
+import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.files.GetTemporaryLinkResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,16 @@ public class DropboxStorage implements Storage {
             getClient().files().uploadBuilder(destinationPath)
                     .uploadAndFinish(in);
         } catch (Exception e) {
+            throw new StorageException();
+        }
+    }
+
+    @Override
+    public String getTempLink(String filePath) {
+        try {
+            GetTemporaryLinkResult getTemporaryLinkResult = getClient().files().getTemporaryLink(filePath);
+            return getTemporaryLinkResult.getLink();
+        } catch (DbxException e) {
             throw new StorageException();
         }
     }

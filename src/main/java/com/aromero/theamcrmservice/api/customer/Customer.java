@@ -11,11 +11,14 @@ public class Customer {
     @Column(columnDefinition = "serial")
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "surname")
+    @Column(name = "surname", nullable = false)
     private String surname;
+
+    @Column(name = "photoFilename")
+    private String photoFileName;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(columnDefinition="long", name = "created_by_user_id", nullable = false)
@@ -24,7 +27,6 @@ public class Customer {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(columnDefinition="long", name = "modified_by_user_id")
     private User modifiedByUser;
-    //TODO: add a photo field
 
     public Customer() {
     }
@@ -51,6 +53,14 @@ public class Customer {
 
     public void setSurname(String surname) {
         this.surname = surname;
+    }
+
+    public String getPhotoFileName() {
+        return photoFileName;
+    }
+
+    public void setPhotoFileName(String photoFileName) {
+        this.photoFileName = photoFileName;
     }
 
     public User getCreatedByUser() {
