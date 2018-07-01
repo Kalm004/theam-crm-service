@@ -17,8 +17,7 @@ public class DropboxStorage implements Storage {
     @Override
     public void saveFile(String destinationPath, InputStream in) {
         try {
-            getClient().files().uploadBuilder(destinationPath)
-                    .uploadAndFinish(in);
+            getClient().files().uploadBuilder(destinationPath).uploadAndFinish(in);
         } catch (Exception e) {
             throw new StorageException();
         }

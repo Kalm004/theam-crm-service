@@ -1,19 +1,14 @@
-package com.aromero.theamcrmservice.api.customer;
+package com.aromero.theamcrmservice.api.customer.dto;
 
-public class CustomerImportDTO {
-    private Long id;
+import javax.validation.constraints.NotBlank;
+
+public class UpdateCustomerRequest {
+    @NotBlank
     private String name;
+    @NotBlank
     private String surname;
 
-    public CustomerImportDTO() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public UpdateCustomerRequest() {
     }
 
     public String getName() {

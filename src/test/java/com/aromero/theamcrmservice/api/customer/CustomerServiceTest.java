@@ -1,6 +1,8 @@
 package com.aromero.theamcrmservice.api.customer;
 
-import com.aromero.theamcrmservice.api.user.User;
+import com.aromero.theamcrmservice.api.customer.dto.CreateCustomerRequest;
+import com.aromero.theamcrmservice.api.customer.dto.CustomerResponse;
+import com.aromero.theamcrmservice.api.customer.dto.UpdateCustomerRequest;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -9,8 +11,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -20,61 +22,57 @@ public class CustomerServiceTest {
 
     @Test
     public void getAllCustomers() {
-        List<Customer> allCustomers = customerService.getAllCustomers();
+        List<CustomerResponse> allCustomers = customerService.getAllCustomers();
 
         Assert.assertEquals(1, allCustomers.size());
     }
 
     @Test
     public void getCustomerByIdFound() {
-        Optional<Customer> customer = customerService.getCustomerById(1L);
+        CustomerResponse customer = customerService.getCustomerById(1L);
 
-        Assert.assertTrue(customer.isPresent());
-        Assert.assertNull(customer.get().getModifiedByUser());
+        Assert.assertNotNull(customer.getCreatedByUser());
+        Assert.assertNull(customer.getModifiedByUser());
     }
 
     @Test
     public void getCustomerByNotFound() {
-        Optional<Customer> customer = customerService.getCustomerById(100L);
-
-        Assert.assertFalse(customer.isPresent());
+        try {
+            CustomerResponse customer = customerService.getCustomerById(100L);
+            Assert.fail("An EntityNotFoundException should has been thrown");
+        } catch (EntityNotFoundException e) {
+            Assert.assertTrue(true);
+        }
     }
 
     @Test
     @DirtiesContext
     public void addCustomer() {
-        Customer customer = new Customer();
+        CreateCustomerRequest customer = new CreateCustomerRequest();
         customer.setName("Name2");
         customer.setSurname("Surname2");
-        User createdByUser = new User();
-        createdByUser.setId(1L);
-        customer.setCreatedByUser(createdByUser);
 
+        CustomerResponse modifiedCustomerResponse = customerService.createCustomer(customer, 1L);
+        Assert.assertNotNull(modifiedCustomerResponse.getId());
 
-        customerService.saveCustomer(customer, createdByUser);
-
-        List<Customer> customerList = customerService.getAllCustomers();
+        List<CustomerResponse> customerList = customerService.getAllCustomers();
         Assert.assertTrue(customerList.stream().anyMatch(c -> c.getName().equals("Name2")));
     }
 
     @Test
     @DirtiesContext
     public void modifyCustomer() {
-        Optional<Customer> customer = customerService.getCustomerById(1L);
+        CustomerResponse customerFromDatabase = customerService.getCustomerById(1L);
 
-        Assert.assertTrue(customer.isPresent());
+        UpdateCustomerRequest updateCustomerRequest = new UpdateCustomerRequest();
+        updateCustomerRequest.setName("ModifiedName");
+        updateCustomerRequest.setSurname(customerFromDatabase.getSurname());
 
-        customer.get().setName("ModifiedName");
+        customerService.updateCustomer(1L, updateCustomerRequest, 1L);
 
-        User modifiedByUser = new User();
-        modifiedByUser.setId(1L);
+        CustomerResponse modifiedCustomer = customerService.getCustomerById(1L);
 
-        customerService.saveCustomer(customer.get(), modifiedByUser);
-
-        Optional<Customer> modifiedCustomer = customerService.getCustomerById(1L);
-
-        Assert.assertTrue(modifiedCustomer.isPresent());
-        Assert.assertEquals("ModifiedName", modifiedCustomer.get().getName());
+        Assert.assertEquals("ModifiedName", modifiedCustomer.getName());
     }
 
     @Test
@@ -82,7 +80,7 @@ public class CustomerServiceTest {
     public void deleteCustomer() {
         customerService.deleteCustomer(1L);
 
-        List<Customer> customerList = customerService.getAllCustomers();
+        List<CustomerResponse> customerList = customerService.getAllCustomers();
         Assert.assertTrue(customerList.isEmpty());
     }
 }

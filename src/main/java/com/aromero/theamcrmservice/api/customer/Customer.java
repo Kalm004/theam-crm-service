@@ -78,4 +78,17 @@ public class Customer {
     public void setModifiedByUser(User modifiedByUser) {
         this.modifiedByUser = modifiedByUser;
     }
+
+    public void setCreatedByUser(Long modifiedByUserId) {
+        User createdByUser = new User();
+        createdByUser.setId(modifiedByUserId);
+        this.createdByUser = createdByUser;
+    }
+
+    public void setModifiedByUser(Long modifiedByUserId) {
+        User modifiedByUser = new User();
+        modifiedByUser.setId(modifiedByUserId);
+
+        this.modifiedByUser = modifiedByUser;
+    }
 }
