@@ -20,7 +20,7 @@ import java.util.List;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class UserServiceTest {
-    private static final int NUMBER_OF_NOT_DELETED_USERS = 2;
+    private static final int NUMBER_OF_NOT_DELETED_USERS = 3;
 
     @Autowired
     private UserService userService;

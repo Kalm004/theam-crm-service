@@ -22,6 +22,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
 public class UserIntegrationTest {
+    private static final int NUMBER_OF_NOT_DELETED_USERS = 3;
+
     @LocalServerPort
     private Integer port;
 
@@ -55,7 +57,7 @@ public class UserIntegrationTest {
     @Test
     public void getAllUsers200AndGetListOfUsers() {
         getWithTokenAndExpectedCodeResult(adminLoginResponse.getToken(), "/users", 200).
-            body("size()", equalTo(2));
+            body("size()", equalTo(NUMBER_OF_NOT_DELETED_USERS));
     }
 
     @Test
@@ -81,11 +83,13 @@ public class UserIntegrationTest {
     }
 
     @Test
+    @DirtiesContext
     public void deleteUser410WhenUserIsAlreadyReleased() {
         deleteWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/3", 410);
     }
 
     @Test
+    @DirtiesContext
     public void deleteUser404WhenUserNeverExisted() {
         deleteWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/100", 404);
     }
@@ -109,6 +113,76 @@ public class UserIntegrationTest {
     public void createUser409WhenEmailAlreadyExists() {
         postWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users", 409,
                 new CreateUserRequest("Test", "test", "user1@domain.com", "test", false));
+    }
+
+    @Test
+    @DirtiesContext
+    public void updateUser200WhenUserIsAdmin() {
+        putWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/1", 200,
+                new UpdateUserRequest("Test", "Test", "test", false));
+    }
+
+    @Test
+    @DirtiesContext
+    public void updateUser410WhenDeletedUser() {
+        putWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/3", 410,
+                new UpdateUserRequest("Test", "Test", "test", false));
+    }
+
+    @Test
+    @DirtiesContext
+    public void updateUser404WhenUserNotFound() {
+        putWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/100", 404,
+                new UpdateUserRequest("Test", "Test", "test", false));
+    }
+
+    @Test
+    @DirtiesContext
+    public void updateUser400WhenDataNotComplete() {
+        putWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/1", 400,
+                new UpdateUserRequest("", "Test", "test", false));
+    }
+
+    @Test
+    @DirtiesContext
+    public void setAdminAsUser200WhenUserIsAdmin() {
+        postWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/1/admin", 200, null);
+    }
+
+    @Test
+    @DirtiesContext
+    public void setAdminToUser404WhenUserNotExists() {
+        postWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/100/admin", 404, null);
+    }
+
+    @Test
+    @DirtiesContext
+    public void setAdminToUser410WhenUserHasBeenDeleted() {
+        postWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/3/admin", 410, null);
+    }
+
+    @Test
+    @DirtiesContext
+    public void removeAdminAsUser200WhenUserIsAdmin() {
+        deleteWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/4/admin", 200);
+    }
+
+    @Test
+    @DirtiesContext
+    public void removeAdminToUser404WhenUserNotExists() {
+        deleteWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/100/admin", 404);
+    }
+
+    @Test
+    @DirtiesContext
+    public void removeAdminToUser410WhenUserHasBeenDeleted() {
+        deleteWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/3/admin", 410);
+    }
+
+    @Test
+    @DirtiesContext
+    public void removeAdminToUser400WhenTheUserIsTheLoginUser() {
+        deleteWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/2/admin", 400);
     }
 
     @Test
