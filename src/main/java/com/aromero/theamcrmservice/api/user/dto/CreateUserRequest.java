@@ -24,10 +24,21 @@ public class CreateUserRequest {
     private String password;
 
     @ApiModelProperty(notes = "If the user is admin or not", example = "true", required = true)
-    @NotBlank
     private boolean admin;
 
     public CreateUserRequest() {
+    }
+
+    public CreateUserRequest(@NotBlank String name,
+                             @NotBlank String lastName,
+                             @NotBlank String email,
+                             @NotBlank String password,
+                             boolean admin) {
+        this.name = name;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.admin = admin;
     }
 
     public String getName() {

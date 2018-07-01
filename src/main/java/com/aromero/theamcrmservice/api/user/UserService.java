@@ -102,6 +102,7 @@ public class UserService {
         if (user.orElseThrow(EntityNotFoundException::new).isDeleted()) {
             throw new EntityGoneException("User with id " + id + " has been deleted");
         }
+
         return user.get();
     }
 

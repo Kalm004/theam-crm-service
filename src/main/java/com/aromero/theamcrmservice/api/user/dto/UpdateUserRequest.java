@@ -19,10 +19,16 @@ public class UpdateUserRequest {
     private String password;
 
     @ApiModelProperty(notes = "If the user is admin or not", example = "true", required = true)
-    @NotBlank
     private boolean admin;
 
     public UpdateUserRequest() {
+    }
+
+    public UpdateUserRequest(@NotBlank String name, @NotBlank String lastName, String password, boolean admin) {
+        this.name = name;
+        this.lastName = lastName;
+        this.password = password;
+        this.admin = admin;
     }
 
     public String getName() {

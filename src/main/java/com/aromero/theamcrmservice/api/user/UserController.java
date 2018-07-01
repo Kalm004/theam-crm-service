@@ -3,6 +3,8 @@ package com.aromero.theamcrmservice.api.user;
 import com.aromero.theamcrmservice.api.user.dto.CreateUserRequest;
 import com.aromero.theamcrmservice.api.user.dto.UpdateUserRequest;
 import com.aromero.theamcrmservice.api.user.dto.UserResponse;
+import com.aromero.theamcrmservice.security.CurrentUser;
+import com.aromero.theamcrmservice.security.CustomUserDetails;
 import io.swagger.annotations.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,6 +12,7 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.ValidationException;
 import java.util.List;
 
 @RestController
@@ -96,10 +99,16 @@ public class UserController {
     @DeleteMapping("/{id}/admin")
     @ApiOperation("Remove the admin status of the user")
     @ApiResponses(value = {
+            @ApiResponse(code = 400, message = "User doing the operation is the same that the user affected by the operation"),
             @ApiResponse(code = 404, message = "User with the specified id not found"),
             @ApiResponse(code = 410, message = "User with the specified id was deleted")
     })
-    public void setUserAsNoAdmin(@ApiParam("Id of the user to be deleted") @PathVariable(value = "id") Long id) {
+    public void setUserAsNoAdmin(@ApiParam("Id of the user to be deleted") @PathVariable(value = "id") Long id,
+                                 @CurrentUser CustomUserDetails customUserDetails) {
+        if (id.equals(customUserDetails.getId())) {
+            throw new ValidationException("The admin status of the user doing the operation cannot be changed");
+        }
+
         userService.setUserAdminStatus(id, false);
     }
 }

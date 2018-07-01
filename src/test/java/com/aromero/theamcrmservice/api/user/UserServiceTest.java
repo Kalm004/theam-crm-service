@@ -194,10 +194,54 @@ public class UserServiceTest {
 
     @Test
     @DirtiesContext
-    public void setAdminUserAsNoAdmin() {
+    public void setAdminUserAsNotAdmin() {
         userService.setUserAdminStatus(2L, false);
 
         UserResponse userResponse = userService.getUserResponseById(2L);
         Assert.assertFalse(userResponse.getAdmin());
+    }
+
+    @Test
+    @DirtiesContext
+    public void tryToSetNotExistingUserAsAdmin() {
+        try {
+            userService.setUserAdminStatus(100L, true);
+            Assert.fail("An EntityNotFoundException should have been thrown");
+        } catch (EntityNotFoundException e) {
+            Assert.assertTrue(true);
+        }
+    }
+
+    @Test
+    @DirtiesContext
+    public void tryToSetNotExistingUserAsNotAdmin() {
+        try {
+            userService.setUserAdminStatus(100L, false);
+            Assert.fail("An EntityNotFoundException should have been thrown");
+        } catch (EntityNotFoundException e) {
+            Assert.assertTrue(true);
+        }
+    }
+
+    @Test
+    @DirtiesContext
+    public void tryToSetDeletedUserAsAdmin() {
+        try {
+            userService.setUserAdminStatus(3L, true);
+            Assert.fail("An EntityGoneException should have been thrown");
+        } catch (EntityGoneException e) {
+            Assert.assertTrue(true);
+        }
+    }
+
+    @Test
+    @DirtiesContext
+    public void tryToSetDeletedUserAsNotAdmin() {
+        try {
+            userService.setUserAdminStatus(3L, false);
+            Assert.fail("An EntityGoneException should have been thrown");
+        } catch (EntityGoneException e) {
+            Assert.assertTrue(true);
+        }
     }
 }
