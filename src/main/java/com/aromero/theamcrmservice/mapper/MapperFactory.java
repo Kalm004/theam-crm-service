@@ -1,9 +1,9 @@
 package com.aromero.theamcrmservice.mapper;
 
-import com.aromero.theamcrmservice.auth.mapper.CustomUserDetailsMapper;
-import com.aromero.theamcrmservice.user.mapper.CreateUserRequestMapper;
-import com.aromero.theamcrmservice.user.mapper.UpdateUserRequestMapper;
-import com.aromero.theamcrmservice.user.mapper.UserResponseMapper;
+import com.aromero.theamcrmservice.api.auth.mapper.CustomUserDetailsMapper;
+import com.aromero.theamcrmservice.api.user.mapper.CreateUserRequestMapper;
+import com.aromero.theamcrmservice.api.user.mapper.UpdateUserRequestMapper;
+import com.aromero.theamcrmservice.api.user.mapper.UserResponseMapper;
 import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;

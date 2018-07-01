@@ -1,6 +1,6 @@
 package com.aromero.theamcrmservice.security;
 
-import com.aromero.theamcrmservice.user.User;
+import com.aromero.theamcrmservice.api.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -1,7 +1,7 @@
 package com.aromero.theamcrmservice.security;
 
-import com.aromero.theamcrmservice.user.User;
-import com.aromero.theamcrmservice.user.UserRepository;
+import com.aromero.theamcrmservice.api.user.User;
+import com.aromero.theamcrmservice.api.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
