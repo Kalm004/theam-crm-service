@@ -1,27 +1,28 @@
 package com.aromero.theamcrmservice.user.dto;
 
-public class UpdateUserRequest {
-    private Long id;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+import javax.validation.constraints.NotBlank;
+
+@ApiModel(value = "Information needed to update a user")
+public class UpdateUserRequest {
+    @ApiModelProperty(notes = "Name of the user", example = "John", required = true)
+    @NotBlank
     private String name;
 
+    @ApiModelProperty(notes = "Last name of the user", example = "Doe", required = true)
+    @NotBlank
     private String lastName;
 
-    private String email;
-
+    @ApiModelProperty(notes = "Password of the user", example = "secretPassword")
     private String password;
 
+    @ApiModelProperty(notes = "If the user is admin or not", example = "true", required = true)
+    @NotBlank
     private boolean admin;
 
     public UpdateUserRequest() {
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -38,14 +39,6 @@ public class UpdateUserRequest {
 
     public void setLastName(String lastName) {
         this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
     }
 
     public String getPassword() {

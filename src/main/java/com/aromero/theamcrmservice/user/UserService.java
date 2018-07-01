@@ -75,20 +75,24 @@ public class UserService {
 
     @Transactional
     public void updateUser(Long userId, UpdateUserRequest updateUserRequest) {
-        User currentUser = getNotDeletedUserByIdOrThrow(userId);
+        User userFromDatabase = getNotDeletedUserByIdOrThrow(userId);
 
-        User user = updateUserRequestMapper.mapFrom(updateUserRequest);
-        if (user.getHashedPassword() == null) {
-            user.setHashedPassword(currentUser.getHashedPassword());
+        User userToBeSaved = updateUserRequestMapper.mapFrom(updateUserRequest);
+        userToBeSaved.setId(userId);
+        userToBeSaved.setEmail(userFromDatabase.getEmail());
+        if (userToBeSaved.getHashedPassword() == null) {
+            userToBeSaved.setHashedPassword(userFromDatabase.getHashedPassword());
         }
 
-        userRepository.save(user);
+        userRepository.save(userToBeSaved);
     }
 
     @Transactional
     public void setUserAdminStatus(Long id, Boolean adminStatus) {
         User user = getNotDeletedUserByIdOrThrow(id);
+
         user.setAdmin(adminStatus);
+
         userRepository.save(user);
     }
 

@@ -124,6 +124,36 @@ public class UserServiceTest {
 
     @Test
     @DirtiesContext
+    public void tryToModifyNotExistingUser() {
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest();
+        updateUserRequest.setAdmin(false);
+        updateUserRequest.setName("Test");
+        updateUserRequest.setLastName("LastTest");
+        try {
+            userService.updateUser(100L, updateUserRequest);
+            Assert.fail("An EntityNotFoundException should have been thrown");
+        } catch (EntityNotFoundException e) {
+            Assert.assertTrue(true);
+        }
+    }
+
+    @Test
+    @DirtiesContext
+    public void tryToModifyDeletedUser() {
+        UpdateUserRequest updateUserRequest = new UpdateUserRequest();
+        updateUserRequest.setAdmin(false);
+        updateUserRequest.setName("Test");
+        updateUserRequest.setLastName("LastTest");
+        try {
+            userService.updateUser(3L, updateUserRequest);
+            Assert.fail("An EntityGoneException should have been thrown");
+        } catch (EntityGoneException e) {
+            Assert.assertTrue(true);
+        }
+    }
+
+    @Test
+    @DirtiesContext
     public void deleteExistingUser() {
         userService.deleteUser(2L);
 

@@ -1,14 +1,30 @@
 package com.aromero.theamcrmservice.user.dto;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+import javax.validation.constraints.NotBlank;
+
+@ApiModel(value = "Information needed to create a new user")
 public class CreateUserRequest {
+    @ApiModelProperty(notes = "Name of the user", example = "John", required = true)
+    @NotBlank
     private String name;
 
+    @ApiModelProperty(notes = "Last name of the user", example = "Doe", required = true)
+    @NotBlank
     private String lastName;
 
+    @ApiModelProperty(notes = "Email of the user", example = "john.doe@example.com", required = true)
+    @NotBlank
     private String email;
 
+    @ApiModelProperty(notes = "Password of the user", example = "secretPassword", required = true)
+    @NotBlank
     private String password;
 
+    @ApiModelProperty(notes = "If the user is admin or not", example = "true", required = true)
+    @NotBlank
     private boolean admin;
 
     public CreateUserRequest() {
