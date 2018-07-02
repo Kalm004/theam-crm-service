@@ -17,7 +17,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
-import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -44,7 +44,7 @@ public class CustomerServiceTest {
 
     @Test
     public void getCustomerByIdFound() {
-        given(storage.getTempLink("/customers/1/customer1.jpg")).willReturn("http://test.com/customer.1jpg");
+        when(storage.getTempLink("/customers/1/customer1.jpg")).thenReturn("http://test.com/customer.1jpg");
         CustomerResponse customer = customerService.getCustomerById(1L);
 
         Assert.assertNotNull(customer.getCreatedByUser());

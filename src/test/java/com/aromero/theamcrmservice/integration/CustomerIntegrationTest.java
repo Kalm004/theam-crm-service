@@ -10,7 +10,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.when;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -32,7 +33,7 @@ public class CustomerIntegrationTest extends BaseIntegrationTest{
     @Test
     public void getCustomerById200AndCustomerWithExistingCustomer() {
         String photoTempUrl = "tempUrl";
-        given(storage.getTempLink("/customers/1/customer1.jpg")).willReturn(photoTempUrl);
+        when(storage.getTempLink("/customers/1/customer1.jpg")).thenReturn(photoTempUrl);
 
         getWithTokenAndExpectedStatusCode(
                 noAdminLoginResponse.getToken(),
@@ -53,7 +54,7 @@ public class CustomerIntegrationTest extends BaseIntegrationTest{
 
     @Test
     public void getCustomerById500IfStorageException() {
-        given(storage.getTempLink("/customers/1/customer1.jpg")).willThrow(new StorageException());
+        doThrow(new StorageException()).when(storage).getTempLink("/customers/1/customer1.jpg");
         getWithTokenAndExpectedStatusCode(
                 noAdminLoginResponse.getToken(),
                 "/customers/1",
@@ -84,7 +85,7 @@ public class CustomerIntegrationTest extends BaseIntegrationTest{
     @Test
     @DirtiesContext
     public void deleteCustomer500IfStorageException() {
-        given(storage.getTempLink("/customers/1/customer1.jpg")).willThrow(new StorageException());
+        doThrow(new StorageException()).when(storage).deleteFile("/customers/1/customer1.jpg");
         deleteWithTokenAndExpectedStatusCode(
                 noAdminLoginResponse.getToken(),
                 "/customers/1",
