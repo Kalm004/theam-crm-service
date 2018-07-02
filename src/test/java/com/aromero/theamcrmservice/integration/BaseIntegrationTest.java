@@ -39,7 +39,7 @@ public abstract class BaseIntegrationTest {
                 as(LoginResponse.class);
     }
 
-    protected ValidatableResponse getWithTokenAndExpectedCodeResult(
+    protected ValidatableResponse getWithTokenAndExpectedStatusCode(
             String token,
             String url,
             int expectedCode) {
@@ -51,7 +51,7 @@ public abstract class BaseIntegrationTest {
             statusCode(expectedCode);
     }
 
-    protected void deleteWithTokenAndExceptedStatusCode(
+    protected void deleteWithTokenAndExpectedStatusCode(
             String token,
             String url,
             int expectedStatusCode) {
@@ -63,7 +63,7 @@ public abstract class BaseIntegrationTest {
             statusCode(expectedStatusCode);
     }
 
-    protected void postWithTokenAndExceptedStatusCode(
+    protected void postWithTokenAndExpectedStatusCode(
             String token,
             String url,
             int expectedStatusCode,
@@ -84,7 +84,7 @@ public abstract class BaseIntegrationTest {
             statusCode(expectedStatusCode);
     }
 
-    protected void putWithTokenAndExceptedStatusCode(
+    protected void putWithTokenAndExpectedStatusCode(
             String token,
             String url,
             int expectedStatusCode,

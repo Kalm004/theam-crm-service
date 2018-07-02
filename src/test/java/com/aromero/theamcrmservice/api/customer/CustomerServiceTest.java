@@ -103,10 +103,29 @@ public class CustomerServiceTest {
 
     @Test
     @DirtiesContext
-    public void deleteCustomer() {
+    public void deleteCustomerWithPhoto() {
         customerService.deleteCustomer(1L);
 
         List<CustomerResponse> customerList = customerService.getAllCustomers();
         Assert.assertEquals(NUMBER_OF_CUSTOMERS - 1, customerList.size());
+    }
+
+    @Test
+    @DirtiesContext
+    public void deleteCustomerWithoutPhoto() {
+        customerService.deleteCustomer(2L);
+
+        List<CustomerResponse> customerList = customerService.getAllCustomers();
+        Assert.assertEquals(NUMBER_OF_CUSTOMERS - 1, customerList.size());
+    }
+
+    @Test
+    public void deleteCustomerNotFound() {
+        try {
+            customerService.deleteCustomer(100L);
+            Assert.fail("An EntityNotFoundException should has been thrown");
+        } catch (EntityNotFoundException e) {
+            Assert.assertTrue(true);
+        }
     }
 }

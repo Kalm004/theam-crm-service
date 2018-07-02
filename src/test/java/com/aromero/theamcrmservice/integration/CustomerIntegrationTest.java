@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -21,7 +22,7 @@ public class CustomerIntegrationTest extends BaseIntegrationTest{
 
     @Test
     public void getAllCustomers200AndGetListOfCustomers() {
-        getWithTokenAndExpectedCodeResult(
+        getWithTokenAndExpectedStatusCode(
                 noAdminLoginResponse.getToken(),
                 "/customers",
                 200
@@ -33,7 +34,7 @@ public class CustomerIntegrationTest extends BaseIntegrationTest{
         String photoTempUrl = "tempUrl";
         given(storage.getTempLink("/customers/1/customer1.jpg")).willReturn(photoTempUrl);
 
-        getWithTokenAndExpectedCodeResult(
+        getWithTokenAndExpectedStatusCode(
                 noAdminLoginResponse.getToken(),
                 "/customers/1",
                 200
@@ -43,7 +44,7 @@ public class CustomerIntegrationTest extends BaseIntegrationTest{
 
     @Test
     public void getCustomerById404IfCustomerDoesntExist() {
-        getWithTokenAndExpectedCodeResult(
+        getWithTokenAndExpectedStatusCode(
                 noAdminLoginResponse.getToken(),
                 "/customers/100",
                 404
@@ -53,7 +54,38 @@ public class CustomerIntegrationTest extends BaseIntegrationTest{
     @Test
     public void getCustomerById500IfStorageException() {
         given(storage.getTempLink("/customers/1/customer1.jpg")).willThrow(new StorageException());
-        getWithTokenAndExpectedCodeResult(
+        getWithTokenAndExpectedStatusCode(
+                noAdminLoginResponse.getToken(),
+                "/customers/1",
+                500
+        );
+    }
+
+    @Test
+    @DirtiesContext
+    public void deleteCustomer200WithExistingCustomer() {
+        deleteWithTokenAndExpectedStatusCode(
+                noAdminLoginResponse.getToken(),
+                "/customers/1",
+                200
+        );
+    }
+
+    @Test
+    @DirtiesContext
+    public void deleteCustomer404IfCustomerDoesntExist() {
+        deleteWithTokenAndExpectedStatusCode(
+                noAdminLoginResponse.getToken(),
+                "/customers/100",
+                404
+        );
+    }
+
+    @Test
+    @DirtiesContext
+    public void deleteCustomer500IfStorageException() {
+        given(storage.getTempLink("/customers/1/customer1.jpg")).willThrow(new StorageException());
+        deleteWithTokenAndExpectedStatusCode(
                 noAdminLoginResponse.getToken(),
                 "/customers/1",
                 500
@@ -62,8 +94,10 @@ public class CustomerIntegrationTest extends BaseIntegrationTest{
 
     @Test
     public void error401WhenNotAuthenticatedForAllEndpoints() {
-        getWithTokenAndExpectedCodeResult("", "/customers", 401);
+        getWithTokenAndExpectedStatusCode("", "/customers", 401);
 
-        getWithTokenAndExpectedCodeResult("", "/customers/1", 401);
+        getWithTokenAndExpectedStatusCode("", "/customers/1", 401);
+
+        deleteWithTokenAndExpectedStatusCode("", "/customers/1", 401);
     }
 }

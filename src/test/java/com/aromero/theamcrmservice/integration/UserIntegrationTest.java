@@ -17,169 +17,169 @@ public class UserIntegrationTest extends BaseIntegrationTest {
 
     @Test
     public void getAllUsers200AndGetListOfUsers() {
-        getWithTokenAndExpectedCodeResult(adminLoginResponse.getToken(), "/users", 200).
+        getWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users", 200).
             body("size()", equalTo(NUMBER_OF_NOT_DELETED_USERS));
     }
 
     @Test
     public void getUser200WhenUserIsAdmin() {
-        getWithTokenAndExpectedCodeResult(adminLoginResponse.getToken(), "/users/1", 200).
+        getWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/1", 200).
             body("name", equalTo("User1"));
     }
 
     @Test
     public void getUser404WhenUserDoesntExist() {
-        getWithTokenAndExpectedCodeResult(adminLoginResponse.getToken(), "/users/100", 404);
+        getWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/100", 404);
     }
 
     @Test
     public void getUser410WhenUserIsDeleted() {
-        getWithTokenAndExpectedCodeResult(adminLoginResponse.getToken(), "/users/3", 410);
+        getWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/3", 410);
     }
 
     @Test
     @DirtiesContext
     public void deleteUser200WhenUserIsAdmin() {
-        deleteWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/2", 200);
+        deleteWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/2", 200);
     }
 
     @Test
     @DirtiesContext
     public void deleteUser410WhenUserIsAlreadyReleased() {
-        deleteWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/3", 410);
+        deleteWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/3", 410);
     }
 
     @Test
     @DirtiesContext
     public void deleteUser404WhenUserNeverExisted() {
-        deleteWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/100", 404);
+        deleteWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/100", 404);
     }
 
     @Test
     @DirtiesContext
     public void createUser201WhenUserIsAdmin() {
-        postWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users", 201,
+        postWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users", 201,
                 new CreateUserRequest("Test", "Test", "test@test.com", "test", false));
     }
 
     @Test
     @DirtiesContext
     public void createUser400WhenUserDataIsNotValid() {
-        postWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users", 400,
+        postWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users", 400,
                 new CreateUserRequest("Test", "", "test@test.com", "test", false));
     }
 
     @Test
     @DirtiesContext
     public void createUser409WhenEmailAlreadyExists() {
-        postWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users", 409,
+        postWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users", 409,
                 new CreateUserRequest("Test", "test", "user1@domain.com", "test", false));
     }
 
     @Test
     @DirtiesContext
     public void updateUser200WhenUserIsAdmin() {
-        putWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/1", 200,
+        putWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/1", 200,
                 new UpdateUserRequest("Test", "Test", "test", false));
     }
 
     @Test
     @DirtiesContext
     public void updateUser410WhenDeletedUser() {
-        putWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/3", 410,
+        putWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/3", 410,
                 new UpdateUserRequest("Test", "Test", "test", false));
     }
 
     @Test
     @DirtiesContext
     public void updateUser404WhenUserNotFound() {
-        putWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/100", 404,
+        putWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/100", 404,
                 new UpdateUserRequest("Test", "Test", "test", false));
     }
 
     @Test
     @DirtiesContext
     public void updateUser400WhenDataNotComplete() {
-        putWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/1", 400,
+        putWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/1", 400,
                 new UpdateUserRequest("", "Test", "test", false));
     }
 
     @Test
     @DirtiesContext
     public void setAdminAsUser200WhenUserIsAdmin() {
-        postWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/1/admin", 200, null);
+        postWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/1/admin", 200, null);
     }
 
     @Test
     @DirtiesContext
     public void setAdminToUser404WhenUserNotExists() {
-        postWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/100/admin", 404, null);
+        postWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/100/admin", 404, null);
     }
 
     @Test
     @DirtiesContext
     public void setAdminToUser410WhenUserHasBeenDeleted() {
-        postWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/3/admin", 410, null);
+        postWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/3/admin", 410, null);
     }
 
     @Test
     @DirtiesContext
     public void removeAdminAsUser200WhenUserIsAdmin() {
-        deleteWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/4/admin", 200);
+        deleteWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/4/admin", 200);
     }
 
     @Test
     @DirtiesContext
     public void removeAdminToUser404WhenUserNotExists() {
-        deleteWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/100/admin", 404);
+        deleteWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/100/admin", 404);
     }
 
     @Test
     @DirtiesContext
     public void removeAdminToUser410WhenUserHasBeenDeleted() {
-        deleteWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/3/admin", 410);
+        deleteWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/3/admin", 410);
     }
 
     @Test
     @DirtiesContext
     public void removeAdminToUser400WhenTheUserIsTheLoginUser() {
-        deleteWithTokenAndExceptedStatusCode(adminLoginResponse.getToken(), "/users/2/admin", 400);
+        deleteWithTokenAndExpectedStatusCode(adminLoginResponse.getToken(), "/users/2/admin", 400);
     }
 
     @Test
     public void error401WhenNotAuthenticatedForAllEndpoints() {
-        getWithTokenAndExpectedCodeResult("", "/users", 401);
+        getWithTokenAndExpectedStatusCode("", "/users", 401);
 
-        getWithTokenAndExpectedCodeResult("", "/users/1", 401);
+        getWithTokenAndExpectedStatusCode("", "/users/1", 401);
 
-        deleteWithTokenAndExceptedStatusCode("", "/users/1", 401);
+        deleteWithTokenAndExpectedStatusCode("", "/users/1", 401);
 
-        postWithTokenAndExceptedStatusCode("", "/users", 401, new CreateUserRequest());
+        postWithTokenAndExpectedStatusCode("", "/users", 401, new CreateUserRequest());
 
-        putWithTokenAndExceptedStatusCode("", "/users/1", 401, new UpdateUserRequest());
+        putWithTokenAndExpectedStatusCode("", "/users/1", 401, new UpdateUserRequest());
 
-        postWithTokenAndExceptedStatusCode("", "/users/1/admin", 401, null);
+        postWithTokenAndExpectedStatusCode("", "/users/1/admin", 401, null);
 
-        deleteWithTokenAndExceptedStatusCode("", "/users/1/admin", 401);
+        deleteWithTokenAndExpectedStatusCode("", "/users/1/admin", 401);
     }
 
     @Test
     public void error403WhenUserDontHaveAdminRoleAllEndpoints() {
-        getWithTokenAndExpectedCodeResult(noAdminLoginResponse.getToken(), "/users", 403);
+        getWithTokenAndExpectedStatusCode(noAdminLoginResponse.getToken(), "/users", 403);
 
-        getWithTokenAndExpectedCodeResult(noAdminLoginResponse.getToken(), "/users/1", 403);
+        getWithTokenAndExpectedStatusCode(noAdminLoginResponse.getToken(), "/users/1", 403);
 
-        deleteWithTokenAndExceptedStatusCode(noAdminLoginResponse.getToken(), "/users/1", 403);
+        deleteWithTokenAndExpectedStatusCode(noAdminLoginResponse.getToken(), "/users/1", 403);
 
-        postWithTokenAndExceptedStatusCode(noAdminLoginResponse.getToken(), "/users", 403,
+        postWithTokenAndExpectedStatusCode(noAdminLoginResponse.getToken(), "/users", 403,
                 new CreateUserRequest("Test", "Test", "test@test.com", "test", false));
 
-        putWithTokenAndExceptedStatusCode(noAdminLoginResponse.getToken(), "/users/1", 403,
+        putWithTokenAndExpectedStatusCode(noAdminLoginResponse.getToken(), "/users/1", 403,
                 new UpdateUserRequest("test", "test", "test", false));
 
-        postWithTokenAndExceptedStatusCode(noAdminLoginResponse.getToken(), "/users/1/admin", 403, null);
+        postWithTokenAndExpectedStatusCode(noAdminLoginResponse.getToken(), "/users/1/admin", 403, null);
 
-        deleteWithTokenAndExceptedStatusCode(noAdminLoginResponse.getToken(), "/users/1/admin", 403);
+        deleteWithTokenAndExpectedStatusCode(noAdminLoginResponse.getToken(), "/users/1/admin", 403);
     }
 
 }

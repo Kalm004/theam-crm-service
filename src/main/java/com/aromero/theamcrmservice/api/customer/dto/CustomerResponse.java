@@ -15,7 +15,7 @@ public class CustomerResponse {
     @ApiModelProperty(notes = "Surname of the customer", example = "Doe", required = true)
     private String surname;
 
-    @ApiModelProperty(notes = "Surname of the customer", example = "https://dropbox.com/example")
+    @ApiModelProperty(notes = "Temporarily link to the customer photo, it last 4 hours", example = "https://dropbox.com/example")
     private String photoTempUrl;
 
     @ApiModelProperty(notes = "User that created this customer", required = true)

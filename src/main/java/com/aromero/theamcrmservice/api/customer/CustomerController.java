@@ -68,7 +68,11 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCustomer(@PathVariable(value = "id") Long id) {
+    @ApiOperation("Deletes a customer by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 404, message = "Customer with the specified id not found")
+    })
+    public void deleteCustomer(@ApiParam("Id of the customer") @PathVariable(value = "id") Long id) {
         customerService.deleteCustomer(id);
     }
 

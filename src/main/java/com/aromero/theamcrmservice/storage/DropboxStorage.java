@@ -15,6 +15,15 @@ public class DropboxStorage implements Storage {
     private String accessToken;
 
     @Override
+    public void deleteFile(String filePath) {
+        try {
+            getClient().files().deleteV2(filePath);
+        } catch (Exception e) {
+            throw new StorageException();
+        }
+    }
+
+    @Override
     public void saveFile(String destinationPath, InputStream in) {
         try {
             getClient().files().uploadBuilder(destinationPath).uploadAndFinish(in);

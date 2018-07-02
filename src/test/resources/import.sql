@@ -6,4 +6,4 @@ insert into User (name, last_name, email, hashed_password, admin, deleted) value
 insert into User (name, last_name, email, hashed_password, admin, deleted) values ('User4', 'LastName4', 'user4@domain.com', '$2a$10$PDWuLGUHp5FSitTIER7jv.yJPdJHVOEtZ/gn7TqZ02YPN5gal1Giy', 1, false);
 
 insert into Customer (name, surname, created_by_user_id, modified_by_user_id, photo_filename) values ('Customer1', 'Surname1', 1, null, 'customer1.jpg');
-insert into Customer (name, surname, created_by_user_id, modified_by_user_id, photo_filename) values ('Customer2', 'Surname2', 3, null, 'customer2.jpg');
+insert into Customer (name, surname, created_by_user_id, modified_by_user_id) values ('Customer2', 'Surname2', 3, null);

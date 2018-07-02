@@ -74,7 +74,11 @@ public class CustomerService {
 
     @Transactional
     public void deleteCustomer(Long id) {
-        getCustomerByIdOrThrow(id);
+        Customer customerFromDatabase = getCustomerByIdOrThrow(id);
+
+        if (customerFromDatabase.getPhotoFileName() != null) {
+            storage.deleteFile(buildPhotoPath(id, customerFromDatabase.getPhotoFileName()));
+        }
 
         customerRepository.deleteById(id);
     }
@@ -83,7 +87,7 @@ public class CustomerService {
     public void saveCustomerPhoto(Long customerId, MultipartFile file, Long modifiedByUserId) throws IOException {
         Customer customer = getCustomerByIdOrThrow(customerId);
 
-        storage.saveFile("/customers/" + customerId + "/" + file.getOriginalFilename(), file.getInputStream());
+        storage.saveFile(buildPhotoPath(customerId, file.getOriginalFilename()), file.getInputStream());
 
         customer.setPhotoFileName(file.getOriginalFilename());
         customer.setModifiedByUser(modifiedByUserId);
@@ -99,7 +103,7 @@ public class CustomerService {
             throw new EntityNotFoundException("Customer doesn't have photo");
         }
 
-        return storage.getTempLink("/customers/" + customerId + "/" + customer.getPhotoFileName());
+        return storage.getTempLink(buildPhotoPath(customerId, customer.getPhotoFileName()));
     }
 
     private Customer getCustomerByIdOrThrow(Long id) {
@@ -122,9 +126,13 @@ public class CustomerService {
     private CustomerResponse mapToCustomerResponse(Customer customer) {
         CustomerResponse customerResponse = customerResponseMapper.mapToCustomerResponse(customer);
         if (customer.getPhotoFileName() != null) {
-            String photoTempUrl = storage.getTempLink("/customers/" + customer.getId() + "/" + customer.getPhotoFileName());
+            String photoTempUrl = storage.getTempLink(buildPhotoPath(customer.getId(), customer.getPhotoFileName()));
             customerResponse.setPhotoTempUrl(photoTempUrl);
         }
         return customerResponse;
+    }
+
+    private String buildPhotoPath(Long customerId, String photoFilename) {
+        return "/customers/" + customerId + "/" + photoFilename;
     }
 }
