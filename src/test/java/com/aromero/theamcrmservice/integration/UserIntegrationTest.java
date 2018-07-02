@@ -1,58 +1,19 @@
 package com.aromero.theamcrmservice.integration;
 
-import com.aromero.theamcrmservice.api.auth.dto.LoginRequest;
-import com.aromero.theamcrmservice.api.auth.dto.LoginResponse;
 import com.aromero.theamcrmservice.api.user.dto.CreateUserRequest;
 import com.aromero.theamcrmservice.api.user.dto.UpdateUserRequest;
-import io.restassured.http.ContentType;
-import io.restassured.http.Header;
-import io.restassured.response.ValidatableResponse;
-import io.restassured.specification.RequestSpecification;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static io.restassured.RestAssured.given;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @RunWith(SpringRunner.class)
-public class UserIntegrationTest {
+public class UserIntegrationTest extends BaseIntegrationTest {
     private static final int NUMBER_OF_NOT_DELETED_USERS = 3;
-
-    @LocalServerPort
-    private Integer port;
-
-    private String baseUrl;
-
-    private LoginResponse adminLoginResponse;
-
-    private LoginResponse noAdminLoginResponse;
-
-    @Before
-    public void before() {
-        baseUrl = "http://localhost:" + port;
-
-        adminLoginResponse =
-            given().
-                contentType(ContentType.JSON).
-                body(new LoginRequest("user2@domain.com", "test")).
-            post(baseUrl + "/login").
-                body().
-                as(LoginResponse.class);
-
-        noAdminLoginResponse =
-            given().
-                contentType(ContentType.JSON).
-                body(new LoginRequest("user1@domain.com", "test")).
-            post(baseUrl + "/login").
-                body().
-                as(LoginResponse.class);
-    }
 
     @Test
     public void getAllUsers200AndGetListOfUsers() {
@@ -221,69 +182,5 @@ public class UserIntegrationTest {
         deleteWithTokenAndExceptedStatusCode(noAdminLoginResponse.getToken(), "/users/1/admin", 403);
     }
 
-    private ValidatableResponse getWithTokenAndExpectedCodeResult(
-            String token,
-            String url,
-            int expectedCode) {
-        return given().
-            header(new Header("Authorization", "Bearer " + token)).
-        when().
-            get(baseUrl + url).
-        then().
-            statusCode(expectedCode);
-    }
-
-    private void deleteWithTokenAndExceptedStatusCode(
-            String token,
-            String url,
-            int expectedStatusCode) {
-        given().
-            header(new Header("Authorization", "Bearer " + token)).
-        when().
-            delete(baseUrl + url).
-        then().
-            statusCode(expectedStatusCode);
-    }
-
-    private void postWithTokenAndExceptedStatusCode(
-            String token,
-            String url,
-            int expectedStatusCode,
-            Object object) {
-        RequestSpecification requestSpecification = given().
-            header(new Header("Authorization", "Bearer " + token));
-
-        if (object != null) {
-            requestSpecification = requestSpecification.
-                    contentType(ContentType.JSON).
-                    body(object);
-        }
-
-        requestSpecification.
-        when().
-            post(baseUrl + url).
-        then().
-            statusCode(expectedStatusCode);
-    }
-
-    private void putWithTokenAndExceptedStatusCode(
-            String token,
-            String url,
-            int expectedStatusCode,
-            Object object) {
-        RequestSpecification requestSpecification = given().
-                header(new Header("Authorization", "Bearer " + token));
-
-        if (object != null) {
-            requestSpecification = requestSpecification.contentType(ContentType.JSON).
-                    body(object);
-        }
-
-        requestSpecification.
-        when().
-            put(baseUrl + url).
-        then().
-            statusCode(expectedStatusCode);
-    }
 }
 
