@@ -1,18 +1,27 @@
 package com.aromero.theamcrmservice.api.customer.dto;
 
 import com.aromero.theamcrmservice.api.user.dto.UserForCustomerResponse;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel(description = "Customer information")
 public class CustomerResponse {
+    @ApiModelProperty(notes = "Id of the customer", example = "1", required = true)
     private Long id;
 
+    @ApiModelProperty(notes = "Name of the customer", example = "Jane", required = true)
     private String name;
 
+    @ApiModelProperty(notes = "Surname of the customer", example = "Doe", required = true)
     private String surname;
 
+    @ApiModelProperty(notes = "Surname of the customer", example = "https://dropbox.com/example")
     private String photoTempUrl;
 
+    @ApiModelProperty(notes = "User that created this customer", required = true)
     private UserForCustomerResponse createdByUser;
 
+    @ApiModelProperty(notes = "User that has modified this customer")
     private UserForCustomerResponse modifiedByUser;
 
     public CustomerResponse() {

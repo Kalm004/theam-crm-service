@@ -5,6 +5,7 @@ import com.aromero.theamcrmservice.api.customer.dto.CustomerResponse;
 import com.aromero.theamcrmservice.api.customer.dto.UpdateCustomerRequest;
 import com.aromero.theamcrmservice.security.CurrentUser;
 import com.aromero.theamcrmservice.security.CustomUserDetails;
+import io.swagger.annotations.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,10 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/customers")
+@Api(description = "Controller that provides a CRUD for customers")
+@ApiResponses(value = {
+        @ApiResponse(code = 401, message = "User not authenticated")
+})
 public class CustomerController {
     private final CustomerService customerService;
 
@@ -31,12 +36,17 @@ public class CustomerController {
     }
 
     @GetMapping
+    @ApiOperation(value = "Get all customers")
     public List<CustomerResponse> getAll() {
         return customerService.getAllCustomers();
     }
 
     @GetMapping("/{id}")
-    public CustomerResponse getById(@PathVariable(value = "id") Long id) {
+    @ApiOperation("Get a customer by id")
+    @ApiResponses(value = {
+            @ApiResponse(code = 404, message = "Customer with the specified id not found")
+    })
+    public CustomerResponse getById(@ApiParam("Id of the customer") @PathVariable(value = "id") Long id) {
         return customerService.getCustomerById(id);
     }
 
