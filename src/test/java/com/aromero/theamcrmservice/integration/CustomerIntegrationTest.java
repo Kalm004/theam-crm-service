@@ -2,12 +2,14 @@ package com.aromero.theamcrmservice.integration;
 
 import com.aromero.theamcrmservice.api.auth.dto.LoginRequest;
 import com.aromero.theamcrmservice.api.auth.dto.LoginResponse;
+import com.aromero.theamcrmservice.storage.Storage;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -17,12 +19,17 @@ import static org.hamcrest.core.IsEqual.equalTo;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CustomerIntegrationTest {
+    private static final int NUMBER_OF_CUSTOMERS = 2;
+
     @LocalServerPort
     private Integer port;
 
     private String baseUrl;
 
     private LoginResponse loginResponse;
+
+    @MockBean
+    private Storage storage;
 
     @Before
     public void before() {
@@ -45,7 +52,7 @@ public class CustomerIntegrationTest {
             get(baseUrl + "/customers").
         then().
             statusCode(200).
-            body("size()", equalTo(1));
+            body("size()", equalTo(NUMBER_OF_CUSTOMERS));
     }
 
     @Test

@@ -17,7 +17,7 @@ public class Customer {
     @Column(name = "surname", nullable = false)
     private String surname;
 
-    @Column(name = "photoFilename")
+    @Column(name = "photo_filename")
     private String photoFileName;
 
     @ManyToOne(fetch = FetchType.EAGER)

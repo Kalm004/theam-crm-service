@@ -25,8 +25,6 @@ public class UserServiceTest {
     @Autowired
     private UserService userService;
 
-    //TODO: test that deleted users are not returned by the read endpoints
-
     @Test
     public void getAllUsers() {
         List<UserResponse> allUsers = userService.getAllUsers();

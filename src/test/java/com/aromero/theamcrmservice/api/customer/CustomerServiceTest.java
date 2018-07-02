@@ -3,35 +3,61 @@ package com.aromero.theamcrmservice.api.customer;
 import com.aromero.theamcrmservice.api.customer.dto.CreateCustomerRequest;
 import com.aromero.theamcrmservice.api.customer.dto.CustomerResponse;
 import com.aromero.theamcrmservice.api.customer.dto.UpdateCustomerRequest;
+import com.aromero.theamcrmservice.storage.Storage;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
 
+import static org.mockito.BDDMockito.given;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class CustomerServiceTest {
+    private static final int NUMBER_OF_CUSTOMERS = 2;
+
+    @MockBean
+    private Storage storage;
+
     @Autowired
     private CustomerService customerService;
+
+    @Before
+    public void before() {
+
+    }
 
     @Test
     public void getAllCustomers() {
         List<CustomerResponse> allCustomers = customerService.getAllCustomers();
 
-        Assert.assertEquals(1, allCustomers.size());
+        Assert.assertEquals(NUMBER_OF_CUSTOMERS, allCustomers.size());
     }
 
     @Test
     public void getCustomerByIdFound() {
+        given(storage.getTempLink("/customers/1/customer1.jpg")).willReturn("http://test.com/customer.1jpg");
         CustomerResponse customer = customerService.getCustomerById(1L);
 
         Assert.assertNotNull(customer.getCreatedByUser());
+        Assert.assertNull(customer.getModifiedByUser());
+        Assert.assertEquals("http://test.com/customer.1jpg", customer.getPhotoTempUrl());
+    }
+
+    @Test
+    public void getCustomerByIdCreatedByDeletedUser() {
+        CustomerResponse customer = customerService.getCustomerById(2L);
+
+        Assert.assertNotNull(customer.getCreatedByUser());
+        Assert.assertEquals((Long)3L, customer.getCreatedByUser().getId());
         Assert.assertNull(customer.getModifiedByUser());
     }
 
@@ -81,6 +107,6 @@ public class CustomerServiceTest {
         customerService.deleteCustomer(1L);
 
         List<CustomerResponse> customerList = customerService.getAllCustomers();
-        Assert.assertTrue(customerList.isEmpty());
+        Assert.assertEquals(NUMBER_OF_CUSTOMERS - 1, customerList.size());
     }
 }
