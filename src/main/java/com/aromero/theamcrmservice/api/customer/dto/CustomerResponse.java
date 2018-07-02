@@ -1,6 +1,6 @@
 package com.aromero.theamcrmservice.api.customer.dto;
 
-import com.aromero.theamcrmservice.api.user.dto.UserResponse;
+import com.aromero.theamcrmservice.api.user.dto.UserForCustomerResponse;
 
 public class CustomerResponse {
     private Long id;
@@ -9,11 +9,11 @@ public class CustomerResponse {
 
     private String surname;
 
-    private String photoUrl;
+    private String photoTempUrl;
 
-    private UserResponse createdByUser;
+    private UserForCustomerResponse createdByUser;
 
-    private UserResponse modifiedByUser;
+    private UserForCustomerResponse modifiedByUser;
 
     public CustomerResponse() {
     }
@@ -42,27 +42,27 @@ public class CustomerResponse {
         this.surname = surname;
     }
 
-    public String getPhotoUrl() {
-        return photoUrl;
+    public String getPhotoTempUrl() {
+        return photoTempUrl;
     }
 
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
+    public void setPhotoTempUrl(String photoTempUrl) {
+        this.photoTempUrl = photoTempUrl;
     }
 
-    public UserResponse getCreatedByUser() {
+    public UserForCustomerResponse getCreatedByUser() {
         return createdByUser;
     }
 
-    public void setCreatedByUser(UserResponse createdByUser) {
+    public void setCreatedByUser(UserForCustomerResponse createdByUser) {
         this.createdByUser = createdByUser;
     }
 
-    public UserResponse getModifiedByUser() {
+    public UserForCustomerResponse getModifiedByUser() {
         return modifiedByUser;
     }
 
-    public void setModifiedByUser(UserResponse modifiedByUser) {
+    public void setModifiedByUser(UserForCustomerResponse modifiedByUser) {
         this.modifiedByUser = modifiedByUser;
     }
 }

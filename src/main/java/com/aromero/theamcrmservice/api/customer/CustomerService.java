@@ -49,7 +49,7 @@ public class CustomerService {
     }
 
     public CustomerResponse getCustomerById(Long id) {
-        return customerResponseMapper.mapToCustomerResponse(getCustomerByIdOrThrow(id));
+        return mapToCustomerResponse(getCustomerByIdOrThrow(id));
     }
 
     public CustomerResponse createCustomer(CreateCustomerRequest createCustomerRequest, Long createdByUserId) {
@@ -57,7 +57,7 @@ public class CustomerService {
 
         customerRepository.save(customer);
 
-        return customerResponseMapper.mapToCustomerResponse(customer);
+        return mapToCustomerResponse(customer);
     }
 
     @Transactional
@@ -115,7 +115,16 @@ public class CustomerService {
     private List<CustomerResponse> convertCustomerListToCustomerResponseList(List<Customer> customers) {
         return customers
                 .stream()
-                .map(customerResponseMapper::mapToCustomerResponse)
+                .map(this::mapToCustomerResponse)
                 .collect(Collectors.toList());
+    }
+
+    private CustomerResponse mapToCustomerResponse(Customer customer) {
+        CustomerResponse customerResponse = customerResponseMapper.mapToCustomerResponse(customer);
+        if (customer.getPhotoFileName() != null) {
+            String photoTempUrl = storage.getTempLink("/customers/" + customer.getId() + "/" + customer.getPhotoFileName());
+            customerResponse.setPhotoTempUrl(photoTempUrl);
+        }
+        return customerResponse;
     }
 }
