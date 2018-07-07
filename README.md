@@ -1,3 +1,5 @@
+**Important note:** this project is unfinished and it won't be continued.
+
 # CRM Service
 This project has been developed using Spring Boot. It provides a CRUD for Customers and Users.
 
