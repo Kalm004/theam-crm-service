@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  theam-crm-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: theam-crm-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/theamcrm
+      - SPRING_DATASOURCE_USERNAME=theamcrm
+      - SPRING_DATASOURCE_PASSWORD=theamcrm123
+    depends_on:
+      - postgres
+    networks:
+      - theam-network
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:13-alpine
+    container_name: theam-postgres
+    environment:
+      - POSTGRES_DB=theamcrm
+      - POSTGRES_USER=theamcrm
+      - POSTGRES_PASSWORD=theamcrm123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - theam-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  theam-network:
+    driver: bridge
