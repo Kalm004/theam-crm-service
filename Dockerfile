@@ -18,6 +18,9 @@ COPY src/ src/
 # Build the application (skip tests for faster build)
 RUN ./gradlew build -x test
 
+# List the built JAR files for debugging
+RUN ls -la /app/build/libs/
+
 # Stage 2: Create the runtime image
 FROM openjdk:8-jre-alpine
 
@@ -28,8 +31,8 @@ WORKDIR /app
 RUN addgroup -g 1001 -S appgroup && \
     adduser -u 1001 -S appuser -G appgroup
 
-# Copy the built JAR from the build stage
-COPY --from=build /app/build/libs/theam-crm-service-0.0.1.jar app.jar
+# Copy the built JAR from the build stage (using a more flexible approach)
+COPY --from=build /app/build/libs/theam-crm-service-*.jar app.jar
 
 # Change ownership of the app directory
 RUN chown -R appuser:appgroup /app
